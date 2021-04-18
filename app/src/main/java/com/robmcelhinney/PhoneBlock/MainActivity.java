@@ -90,6 +90,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Social button to go to list
+        Button appsButtonDesk = findViewById(R.id.appsButtonDesk);
+        final Intent installedAppsActivityIntentDesk = new Intent(this, InstalledAppsActivity.class);
+        appsButtonDesk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installedAppsActivityIntentDesk.putExtra(Button_list_Activity,"DESK");
+                startActivity(installedAppsActivityIntentDesk);
+            }
+        });
+
         switchDetection = findViewById(R.id.switchDetection);
         switchDetection.setChecked(settings.getBoolean("switchkey", false));
         switchDetection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -114,40 +125,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Social button to go to list
-        Button appsButtonDesk = findViewById(R.id.appsButtonDesk);
-        final Intent installedAppsActivityIntentDesk = new Intent(this, InstalledAppsActivity.class);
-        appsButtonDesk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installedAppsActivityIntentDesk.putExtra(Button_list_Activity,"DESK");
-                startActivity(installedAppsActivityIntentDesk);
-            }
-        });
-
-        switchDetection = findViewById(R.id.switchDetection);
-        switchDetection.setChecked(settings.getBoolean("switchkey", false));
-        switchDetection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
-                        checkPermission(getApplicationContext());
-                        switchDetection.setChecked(false);
-                    }
-                    else{
-                        startDetectDrivingService();
-                        editor.putBoolean("switchkey", true);
-                    }
-                } else {
-                    if(!settings.getBoolean("switchBT", false)) {
-                        stopDetectDrivingService();
-                    }
-                    editor.putBoolean("switchkey", false);
-                }
-                editor.apply();
-            }
-        });
+//        switchDetection = findViewById(R.id.switchDetection);
+//        switchDetection.setChecked(settings.getBoolean("switchkey", false));
+//        switchDetection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
+//                        checkPermission(getApplicationContext());
+//                        switchDetection.setChecked(false);
+//                    }
+//                    else{
+//                        startDetectDrivingService();
+//                        editor.putBoolean("switchkey", true);
+//                    }
+//                } else {
+//                    if(!settings.getBoolean("switchBT", false)) {
+//                        stopDetectDrivingService();
+//                    }
+//                    editor.putBoolean("switchkey", false);
+//                }
+//                editor.apply();
+//            }
+//        });
 
         Switch switchBT = findViewById(R.id.switchBT);
         switchBT.setChecked(settings.getBoolean("switchBT", false));
