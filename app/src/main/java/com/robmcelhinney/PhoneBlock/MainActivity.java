@@ -25,7 +25,8 @@ import android.widget.ToggleButton;
 public class MainActivity extends AppCompatActivity {
 
     private Switch switchDetection;
-    private Switch switchOtherApps;
+    private Switch switchOtherAppsSocial;
+    private Switch switchOtherAppsDesk;
 
     private ToggleButton toggleButtonActive;
 
@@ -37,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CODE_USAGE = 124;
 
     public static final String CHANNEL_ID = "com.robmcelhinney.PhoneBlock.ANDROID";
+    public static final String Button_list_Activity = null;
+
 
     private static NotificationManager mNotificationManager;
 
@@ -76,12 +79,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button appsButton = findViewById(R.id.appsButton);
-        final Intent installedAppsActivityIntent = new Intent(this, InstalledAppsActivity.class);
-        appsButton.setOnClickListener(new View.OnClickListener() {
+        // Social button to go to list
+        Button appsButtonSocial = findViewById(R.id.appsButtonSocial);
+        final Intent installedAppsActivityIntentSocial = new Intent(this, InstalledAppsActivity.class);
+        appsButtonSocial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(installedAppsActivityIntent);
+                installedAppsActivityIntentSocial.putExtra(Button_list_Activity,"SOCIAL");
+                startActivity(installedAppsActivityIntentSocial);
             }
         });
 
@@ -109,6 +114,41 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Social button to go to list
+        Button appsButtonDesk = findViewById(R.id.appsButtonDesk);
+        final Intent installedAppsActivityIntentDesk = new Intent(this, InstalledAppsActivity.class);
+        appsButtonDesk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                installedAppsActivityIntentDesk.putExtra(Button_list_Activity,"DESK");
+                startActivity(installedAppsActivityIntentDesk);
+            }
+        });
+
+        switchDetection = findViewById(R.id.switchDetection);
+        switchDetection.setChecked(settings.getBoolean("switchkey", false));
+        switchDetection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
+                        checkPermission(getApplicationContext());
+                        switchDetection.setChecked(false);
+                    }
+                    else{
+                        startDetectDrivingService();
+                        editor.putBoolean("switchkey", true);
+                    }
+                } else {
+                    if(!settings.getBoolean("switchBT", false)) {
+                        stopDetectDrivingService();
+                    }
+                    editor.putBoolean("switchkey", false);
+                }
+                editor.apply();
+            }
+        });
+
         Switch switchBT = findViewById(R.id.switchBT);
         switchBT.setChecked(settings.getBoolean("switchBT", false));
         switchBT.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -122,9 +162,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        switchOtherApps = findViewById(R.id.switchOtherApps);
-        switchOtherApps.setChecked(settings.getBoolean("switchOtherApps", false));
-        switchOtherApps.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        // switch other social apps 
+        switchOtherAppsSocial = findViewById(R.id.switchOtherAppsSocial);
+        switchOtherAppsSocial.setChecked(settings.getBoolean("switchOtherApps", false));
+        switchOtherAppsSocial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
@@ -140,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
                         startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS), REQUEST_CODE_USAGE);
 
-                        switchOtherApps.setChecked(false);
+                        switchOtherAppsSocial.setChecked(false);
                     }
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
@@ -151,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
                     startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
 
-                    switchOtherApps.setChecked(false);
+                    switchOtherAppsSocial.setChecked(false);
                 }
             } else {
                 editor.putBoolean("switchOtherApps", false);
@@ -160,9 +201,51 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        // switch other desk apps
+        switchOtherAppsDesk = findViewById(R.id.switchOtherAppsDesk);
+        switchOtherAppsDesk.setChecked(settings.getBoolean("switchOtherApps", false));
+        switchOtherAppsDesk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    editor.putBoolean("switchOtherApps", true);
+                    //checks if is view app running in Foreground.
+                    try {
+                        ApplicationInfo applicationInfo = MainActivity.this.getPackageManager().getApplicationInfo(MainActivity.this.getPackageName(), 0);
+                        assert ( MainActivity.this.getSystemService(Context.APP_OPS_SERVICE)) != null;
+                        if(((AppOpsManager) MainActivity.this.getSystemService(Context.APP_OPS_SERVICE))
+                                .checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
+                                != AppOpsManager.MODE_ALLOWED) {
+                            Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
+
+                            startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS), REQUEST_CODE_USAGE);
+
+                            switchOtherAppsDesk.setChecked(false);
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    // checks if is allowed to overlay on top of other apps, if not then send user to settings.
+                    if(!Settings.canDrawOverlays(MainActivity.this)) {
+                        Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
+                        startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
+
+                        switchOtherAppsDesk.setChecked(false);
+                    }
+                } else {
+                    editor.putBoolean("switchOtherApps", false);
+                }
+                editor.commit();
+            }
+        });
+
+
         if (switchDetection.isChecked()) {
             startDetectDrivingService();
         }
+
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
             mMessageReceiverToggleButton, new IntentFilter("intentToggleButton"));

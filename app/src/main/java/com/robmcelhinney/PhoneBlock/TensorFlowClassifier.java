@@ -12,6 +12,8 @@ import org.tensorflow.contrib.android.TensorFlowInferenceInterface;
  *    Availability: https://github.com/aqibsaeed/Human-Activity-Recognition-using-CNN/tree/master/ActivityRecognition
  **/
 
+// Classifies whether you're driving or not.
+    // Classifier later needed to determine
 class TensorFlowClassifier {
     static {
         System.loadLibrary("tensorflow_inference");

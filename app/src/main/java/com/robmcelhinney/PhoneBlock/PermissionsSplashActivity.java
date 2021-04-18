@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+// give permissions to close other apps. don't touch this file. works fine.
 public class PermissionsSplashActivity extends AppCompatActivity {
 
     private boolean isPaused;

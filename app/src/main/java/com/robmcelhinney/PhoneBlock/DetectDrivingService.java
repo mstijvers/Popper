@@ -239,6 +239,7 @@ public class DetectDrivingService extends Service implements SensorEventListener
         }
     }
 
+    //bluetooth connection to car.
     private void checkBluetooth() {
         if(settings.getBoolean("switchBT", false) && !UtilitiesService.isUserNotDriving() && mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()
                 && mBluetoothAdapter.getProfileConnectionState(BluetoothHeadset.HEADSET) == BluetoothHeadset.STATE_CONNECTED) {

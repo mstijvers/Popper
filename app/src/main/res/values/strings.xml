@@ -11,8 +11,10 @@
     <string name="togglebutton">ToggleButton</string>
     <string name="turn_on_detection">Turn On Detection</string>
     <string name="bluetooth_detection">Bluetooth Detection</string>
-    <string name="block_apps">Block Apps</string>
-    <string name="choose_apps">Choose Apps</string>
+    <string name="block_apps_social">Block Apps Social</string>
+    <string name="block_apps_desk">Block Apps Desk</string>
+    <string name="choose_apps_social">Choose Apps Social</string>
+    <string name="choose_apps_desk">Choose Apps Desk</string>
     <string name="go">Go</string>
     <string name="without_these_permissions_we_will_be_unable_to_activate_the_block_while_driving">Without these permissions, we will be unable to activate the block while driving.</string>
     <string name="please_enable_notification_access_on_the_next_screen_to_use_this_app">Please enable notification access on the next screen to use this app.</string>

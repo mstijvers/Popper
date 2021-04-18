@@ -5,7 +5,7 @@ import android.content.Intent;
 
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
-
+//recognize the kind of activity. by google (running / driving) can be deleted later.
 public class ActivityRecognisedService extends IntentService {
 
     public static final String ACTION_ActivityRecognisedService = "com.robmcelhinney.PhoneBlock.ACTIVITY_RESPONSE";

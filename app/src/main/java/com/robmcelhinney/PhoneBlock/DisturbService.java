@@ -16,7 +16,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
 import static com.robmcelhinney.PhoneBlock.MainActivity.CHANNEL_ID;
-
+//disturb service everything that is connected to disturbing while diving
+// (setting wether you can be disturbed or not.)
 public class DisturbService extends Service{
 
     private static NotificationManager mNotificationManager;

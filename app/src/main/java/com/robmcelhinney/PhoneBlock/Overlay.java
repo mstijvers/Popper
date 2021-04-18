@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static com.robmcelhinney.PhoneBlock.MainActivity.MY_PREFS_NAME;
-
+//close apps and display overlay message 'don't open app.' or another message.
 public class Overlay extends Service {
 
     private final int delayMillis = 2000;
