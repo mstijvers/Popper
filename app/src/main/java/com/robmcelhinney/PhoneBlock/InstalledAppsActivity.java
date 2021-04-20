@@ -37,8 +37,8 @@ public class InstalledAppsActivity extends AppCompatActivity {
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
 
-    private Set<String> selectedAppsPackageName;
-    //private Set<String> selectedAppsPackageNameDesk;
+    private Set<String> selectedAppsPackageNameSocial;
+    private Set<String> selectedAppsPackageNameDesk;
 
     private View progressOverlay;
     private ListView listView;
@@ -57,8 +57,8 @@ public class InstalledAppsActivity extends AppCompatActivity {
         settings = getApplicationContext().getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         editor = settings.edit();
         thisContext = this;
-        selectedAppsPackageName = new HashSet<>();
-//        selectedAppsPackageNameDesk = new HashSet<>();
+        selectedAppsPackageNameSocial = new HashSet<>();
+        selectedAppsPackageNameDesk = new HashSet<>();
 
         listView = findViewById(R.id.listViewID);
         new LoadApplications().execute();
@@ -89,14 +89,14 @@ public class InstalledAppsActivity extends AppCompatActivity {
 
     private class MyListAdapter extends ArrayAdapter<String> {
         private int layout;
-        boolean checkState[];
-//        boolean checkStateD[];
+        boolean checkStateSocial[];
+        boolean checkStateDesk[];
 
         MyListAdapter(Context context, List<String> objects) {
             super(context, R.layout.list_item, objects);
             layout = R.layout.list_item;
-            checkState = new boolean[objects.size()];
-//            checkStateD = new boolean[objects.size()];
+            checkStateSocial = new boolean[objects.size()];
+            checkStateDesk = new boolean[objects.size()];
         }
 
         @NonNull
@@ -105,8 +105,8 @@ public class InstalledAppsActivity extends AppCompatActivity {
             //make a new viewholder
             ViewHolder viewHolder = new ViewHolder();
             //get the arraylist of apps tat are selected (for social package?)
-            selectedAppsPackageName = new HashSet<>(settings.getStringSet("selectedAppsPackage", new HashSet<String>()));
-//            selectedAppsPackageNameDesk = new HashSet<>(settings.getStringSet("selectedAppsPackageD", new HashSet<String>()));
+            selectedAppsPackageNameSocial = new HashSet<>(settings.getStringSet("selectedAppsPackageSocial", new HashSet<String>()));
+            selectedAppsPackageNameDesk = new HashSet<>(settings.getStringSet("selectedAppsPackageDesk", new HashSet<String>()));
 
             //if ther is no convertView, then make one, with viewholder. so convertView stores the data of View basically.
             if(convertView == null) {
@@ -114,31 +114,33 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 viewHolder.thumbnail = convertView.findViewById(R.id.listItemThumbnail);
                 viewHolder.title = convertView.findViewById(R.id.listItemText);
                 //checks state of social list checkboxes
-                viewHolder.checkBox = convertView.findViewById(R.id.listCheckBoxSocial);
-//                viewHolder.checkBoxD = convertView.findViewById(R.id.listCheckBoxDesk);
+                viewHolder.checkBoxSocial = convertView.findViewById(R.id.listCheckBoxSocial);
+                viewHolder.checkBoxDesk = convertView.findViewById(R.id.listCheckBoxDesk);
 
                 viewHolder.title.setText(installedApps.get(position).loadLabel(getApplicationContext().getPackageManager()));
                 viewHolder.thumbnail.setImageDrawable(installedApps.get(position).loadIcon(getApplicationContext().getPackageManager()));
 
                 //for the strings that are also in the list of installed apps set the checkbox to true
                 // else set the checkbox to false.
-                if(selectedAppsPackageName.contains(installedApps.get(position).packageName)) {
-                    viewHolder.checkBox.setChecked(true);
-                    checkState[position] = true;
+                //Social
+                if(selectedAppsPackageNameSocial.contains(installedApps.get(position).packageName)) {
+                    viewHolder.checkBoxSocial.setChecked(true);
+                    checkStateSocial[position] = true;
                 }
                 else{
-                    viewHolder.checkBox.setChecked(false);
-                    checkState[position] = false;
+                    viewHolder.checkBoxSocial.setChecked(false);
+                    checkStateSocial[position] = false;
                 }
 
-//                if(selectedAppsPackageNameDesk.contains(installedApps.get(position).packageName)) {
-//                    viewHolder.checkBoxD.setChecked(true);
-//                    checkStateD[position] = true;
-//                }
-//                else{
-//                    viewHolder.checkBoxD.setChecked(false);
-//                    checkStateD[position] = false;
-//                }
+                //Desk
+                if(selectedAppsPackageNameDesk.contains(installedApps.get(position).packageName)) {
+                    viewHolder.checkBoxDesk.setChecked(true);
+                    checkStateDesk[position] = true;
+                }
+                else{
+                    viewHolder.checkBoxDesk.setChecked(false);
+                    checkStateDesk[position] = false;
+                }
                 convertView.setTag(viewHolder);
             }
             //if convertView does exist, set the viewholder to the data stored in convertView
@@ -150,66 +152,67 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 // for the strings that are also in the list of installed apps set the checkbox to true
                 // else set the checkbox to false.
                 // Social
-                if(settings.getStringSet("selectedAppsPackage", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
-                    checkState[position] = true;
-                    viewHolder.checkBox.setChecked(true);
+                if(settings.getStringSet("selectedAppsPackageSocial", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
+                    checkStateSocial[position] = true;
+                    viewHolder.checkBoxSocial.setChecked(true);
                 }
                 else{
-                    checkState[position] = false;
-                    viewHolder.checkBox.setChecked(false);
+                    checkStateSocial[position] = false;
+                    viewHolder.checkBoxSocial.setChecked(false);
                 }
+
                 // Desk
-//                if(settings.getStringSet("selectedAppsPackageD", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
-//                    checkStateD[position] = true;
-//                    viewHolder.checkBoxD.setChecked(true);
-//                }
-//                else{
-//                    checkStateD[position] = false;
-//                    viewHolder.checkBoxD.setChecked(false);
-//                }
+                if(settings.getStringSet("selectedAppsPackageDesk", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
+                    checkStateDesk[position] = true;
+                    viewHolder.checkBoxDesk.setChecked(true);
+                }
+                else{
+                    checkStateDesk[position] = false;
+                    viewHolder.checkBoxDesk.setChecked(false);
+                }
             }
 
             //set onclick listener to viewholder checkboxes (SOCIAL) and store this data in convertView
-            viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
+            viewHolder.checkBoxSocial.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
                     // aka remove from settings (social
-                if(checkState[position]) {
-                    selectedAppsPackageName.remove(installedApps.get(position).packageName);
-                    editor.putStringSet("selectedAppsPackage", selectedAppsPackageName).apply();
+                if(checkStateSocial[position]) {
+                    selectedAppsPackageNameSocial.remove(installedApps.get(position).packageName);
+                    editor.putStringSet("selectedAppsPackageSocial", selectedAppsPackageNameSocial).apply();
                 }
                 // else if checkbox was unclicked, click checkbox and add the app to selectedAppsPackageName
                 // aka add to settings (social
                 else {
-                    selectedAppsPackageName.add(installedApps.get(position).packageName);
-                    editor.putStringSet("selectedAppsPackage", selectedAppsPackageName).apply();
+                    selectedAppsPackageNameSocial.add(installedApps.get(position).packageName);
+                    editor.putStringSet("selectedAppsPackageSocial", selectedAppsPackageNameSocial).apply();
                 }
-                checkState[position] = !checkState[position];
+                checkStateSocial[position] = !checkStateSocial[position];
                 notifyDataSetChanged();
                 }
             });
 
             //set onclick listener to viewholder checkboxes (DESK) and store this data in convertView
-//            viewHolder.checkBoxD.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                    // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
-//                    // aka remove from settings (social
-//                    if(checkStateD[position]) {
-//                        selectedAppsPackageNameDesk.remove(installedApps.get(position).packageName);
-//                        editor.putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk).apply();
-//                    }
-//                    // else if checkbox was unclicked, click checkbox and add the app to selectedAppsPackageName
-//                    // aka add to settings (desk
-//                    else {
-//                        selectedAppsPackageNameDesk.add(installedApps.get(position).packageName);
-//                        editor.putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk).apply();
-//                    }
-//                    checkStateD[position] = !checkStateD[position];
-//                    notifyDataSetChanged();
-//                }
-//                });
+            viewHolder.checkBoxDesk.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
+                    // aka remove from settings (social
+                    if(checkStateDesk[position]) {
+                        selectedAppsPackageNameDesk.remove(installedApps.get(position).packageName);
+                        editor.putStringSet("selectedAppsPackageDesk", selectedAppsPackageNameDesk).apply();
+                    }
+                    // else if checkbox was unclicked, click checkbox and add the app to selectedAppsPackageName
+                    // aka add to settings (desk
+                    else {
+                        selectedAppsPackageNameDesk.add(installedApps.get(position).packageName);
+                        editor.putStringSet("selectedAppsPackageDesk", selectedAppsPackageNameDesk).apply();
+                    }
+                    checkStateDesk[position] = !checkStateDesk[position];
+                    notifyDataSetChanged();
+                }
+                });
             return convertView;
         }
     }
@@ -218,17 +221,17 @@ public class InstalledAppsActivity extends AppCompatActivity {
     public class ViewHolder {
         ImageView thumbnail;
         TextView title;
-        CheckBox checkBox;
-       // CheckBox checkBoxD;
+        CheckBox checkBoxSocial;
+        CheckBox checkBoxDesk;
     }
 
     // if the screen is paused go back and safe the sellected apps of
-    // selectedAppsPackageName in "SelectedAppsPackage" file for later use.
+    // selectedAppsPackageName in "SelectedAppsPackageSocial" file for later use.
     @Override
     protected void onPause() {
         editor.clear()
-                .putStringSet("selectedAppsPackage", selectedAppsPackageName)
-               // .putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk)
+                .putStringSet("selectedAppsPackageSocial", selectedAppsPackageNameSocial)
+                .putStringSet("selectedAppsPackageDesk", selectedAppsPackageNameDesk)
                 .commit();
         super.onPause();
     }

@@ -174,12 +174,12 @@ public class MainActivity extends AppCompatActivity {
 
         // switch other desk apps
         switchOtherAppsDesk = findViewById(R.id.switchOtherAppsDesk);
-        switchOtherAppsDesk.setChecked(settings.getBoolean("switchOtherApps", false));
+        switchOtherAppsDesk.setChecked(settings.getBoolean("switchOtherAppsDesk", false));
         switchOtherAppsDesk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    editor.putBoolean("switchOtherApps", true);
+                    editor.putBoolean("switchOtherAppsDesk", true);
                     //checks if is view app running in Foreground.
                     try {
                         ApplicationInfo applicationInfo = MainActivity.this.getPackageManager().getApplicationInfo(MainActivity.this.getPackageName(), 0);
@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
                         switchOtherAppsDesk.setChecked(false);
                     }
                 } else {
-                    editor.putBoolean("switchOtherApps", false);
+                    editor.putBoolean("switchOtherAppsDesk", false);
                 }
                 editor.commit();
             }

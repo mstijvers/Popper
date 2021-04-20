@@ -14,6 +14,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 
 import static com.robmcelhinney.PhoneBlock.MainActivity.CHANNEL_ID;
 //disturb service everything that is connected to disturbing while diving
@@ -88,8 +89,12 @@ public class DisturbService extends Service{
         sendToMainActivity(true);
 
         UtilitiesService.setUserNotDriving(false);
-
+    // if switch other app boolean is set  to false start overlay service
         if(settings.getBoolean("switchOtherApps", false)) {
+            startOverlayService();
+            Log.d("MyActivity", "Switch appsS button Entered ");
+        } else if(settings.getBoolean("switchOtherAppsDesk", false)) {
+            Log.d("MyActivity", "Switch appsD button Entered");
             startOverlayService();
         }
     }
