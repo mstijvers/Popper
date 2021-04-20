@@ -178,6 +178,7 @@ public class DetectDrivingService extends Service implements SensorEventListener
                 // Will not deactive block until user has been on foot for ~10 seconds.
                 // This prevents a single poor prediction turning off the block.
                 if(numTimesOnFoot >= 2) {
+                    // if utility service is on. put on desturb service
                     if(UtilitiesService.isActive()) {
                         DisturbService.doDisturb();
                     }
@@ -194,6 +195,7 @@ public class DetectDrivingService extends Service implements SensorEventListener
                         onPause();
                     }
                 }
+                //if phone is in vehicle set do not desturb service on.
                 if(activity.equalsIgnoreCase("IN_VEHICLE") && conf > 0.95 && isSittingIntoCar()
                         && !UtilitiesService.isActive()) {
                     DisturbService.doNotDisturb();
@@ -247,6 +249,7 @@ public class DetectDrivingService extends Service implements SensorEventListener
                 BluetoothClass bluetoothClass = device.getBluetoothClass();
                 if (bluetoothClass != null) {
                     int deviceClass = bluetoothClass.getDeviceClass();
+                    //if connected to bluetooth car do not disturb service on.
                     if ((deviceClass == BluetoothClass.Device.AUDIO_VIDEO_CAR_AUDIO || deviceClass == BluetoothClass.Device.AUDIO_VIDEO_HANDSFREE)) {
                         DisturbService.doNotDisturb();
                         onPause();

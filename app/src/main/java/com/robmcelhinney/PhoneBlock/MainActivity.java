@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ToggleButton toggleButtonActive;
 
+    //what if we make two MyPrefs File? one for SOCIAL and ONE for Desk
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
@@ -148,12 +149,14 @@ public class MainActivity extends AppCompatActivity {
             if (isChecked) {
                 editor.putBoolean("switchOtherApps", true);
                 //checks if is view app running in Foreground.
+                //checks whether premission is granted to block other applications while driving
                 try {
                     ApplicationInfo applicationInfo = MainActivity.this.getPackageManager().getApplicationInfo(MainActivity.this.getPackageName(), 0);
                     assert ( MainActivity.this.getSystemService(Context.APP_OPS_SERVICE)) != null;
                     if(((AppOpsManager) MainActivity.this.getSystemService(Context.APP_OPS_SERVICE))
                             .checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
                             != AppOpsManager.MODE_ALLOWED) {
+                        // checks if is allowed to overlay on top of other apps, if not then send user to settings.
                         Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
 
                         startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS), REQUEST_CODE_USAGE);
@@ -278,6 +281,7 @@ public class MainActivity extends AppCompatActivity {
         stopService(intent);
     }
 
+   //call Stop and start Disturb service
     private void startDisturbService() {
         Intent intent = new Intent(this, DisturbService.class);
         startService(intent);
