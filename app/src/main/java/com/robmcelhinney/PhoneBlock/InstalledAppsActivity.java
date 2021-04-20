@@ -102,7 +102,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 convertView = LayoutInflater.from(getContext()).inflate(layout, parent, false);
                 viewHolder.thumbnail = convertView.findViewById(R.id.listItemThumbnail);
                 viewHolder.title = convertView.findViewById(R.id.listItemText);
-                viewHolder.checkBox = convertView.findViewById(R.id.listCheckBox);
+                viewHolder.checkBox = convertView.findViewById(R.id.listCheckBoxSocial);
 
                 viewHolder.title.setText(installedApps.get(position).loadLabel(getApplicationContext().getPackageManager()));
                 viewHolder.thumbnail.setImageDrawable(installedApps.get(position).loadIcon(getApplicationContext().getPackageManager()));
