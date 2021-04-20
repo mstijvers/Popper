@@ -38,7 +38,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
 
     private Set<String> selectedAppsPackageName;
-    private Set<String> selectedAppsPackageNameDesk;
+    //private Set<String> selectedAppsPackageNameDesk;
 
     private View progressOverlay;
     private ListView listView;
@@ -58,7 +58,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
         editor = settings.edit();
         thisContext = this;
         selectedAppsPackageName = new HashSet<>();
-        selectedAppsPackageNameDesk = new HashSet<>();
+//        selectedAppsPackageNameDesk = new HashSet<>();
 
         listView = findViewById(R.id.listViewID);
         new LoadApplications().execute();
@@ -90,13 +90,13 @@ public class InstalledAppsActivity extends AppCompatActivity {
     private class MyListAdapter extends ArrayAdapter<String> {
         private int layout;
         boolean checkState[];
-        boolean checkStateD[];
+//        boolean checkStateD[];
 
         MyListAdapter(Context context, List<String> objects) {
             super(context, R.layout.list_item, objects);
             layout = R.layout.list_item;
             checkState = new boolean[objects.size()];
-            checkStateD = new boolean[objects.size()];
+//            checkStateD = new boolean[objects.size()];
         }
 
         @NonNull
@@ -106,7 +106,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
             ViewHolder viewHolder = new ViewHolder();
             //get the arraylist of apps tat are selected (for social package?)
             selectedAppsPackageName = new HashSet<>(settings.getStringSet("selectedAppsPackage", new HashSet<String>()));
-            selectedAppsPackageNameDesk = new HashSet<>(settings.getStringSet("selectedAppsPackageD", new HashSet<String>()));
+//            selectedAppsPackageNameDesk = new HashSet<>(settings.getStringSet("selectedAppsPackageD", new HashSet<String>()));
 
             //if ther is no convertView, then make one, with viewholder. so convertView stores the data of View basically.
             if(convertView == null) {
@@ -115,7 +115,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 viewHolder.title = convertView.findViewById(R.id.listItemText);
                 //checks state of social list checkboxes
                 viewHolder.checkBox = convertView.findViewById(R.id.listCheckBoxSocial);
-                viewHolder.checkBoxD = convertView.findViewById(R.id.listCheckBoxDesk);
+//                viewHolder.checkBoxD = convertView.findViewById(R.id.listCheckBoxDesk);
 
                 viewHolder.title.setText(installedApps.get(position).loadLabel(getApplicationContext().getPackageManager()));
                 viewHolder.thumbnail.setImageDrawable(installedApps.get(position).loadIcon(getApplicationContext().getPackageManager()));
@@ -131,14 +131,14 @@ public class InstalledAppsActivity extends AppCompatActivity {
                     checkState[position] = false;
                 }
 
-                if(selectedAppsPackageNameDesk.contains(installedApps.get(position).packageName)) {
-                    viewHolder.checkBoxD.setChecked(true);
-                    checkStateD[position] = true;
-                }
-                else{
-                    viewHolder.checkBoxD.setChecked(false);
-                    checkStateD[position] = false;
-                }
+//                if(selectedAppsPackageNameDesk.contains(installedApps.get(position).packageName)) {
+//                    viewHolder.checkBoxD.setChecked(true);
+//                    checkStateD[position] = true;
+//                }
+//                else{
+//                    viewHolder.checkBoxD.setChecked(false);
+//                    checkStateD[position] = false;
+//                }
                 convertView.setTag(viewHolder);
             }
             //if convertView does exist, set the viewholder to the data stored in convertView
@@ -159,14 +159,14 @@ public class InstalledAppsActivity extends AppCompatActivity {
                     viewHolder.checkBox.setChecked(false);
                 }
                 // Desk
-                if(settings.getStringSet("selectedAppsPackageD", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
-                    checkStateD[position] = true;
-                    viewHolder.checkBoxD.setChecked(true);
-                }
-                else{
-                    checkStateD[position] = false;
-                    viewHolder.checkBoxD.setChecked(false);
-                }
+//                if(settings.getStringSet("selectedAppsPackageD", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
+//                    checkStateD[position] = true;
+//                    viewHolder.checkBoxD.setChecked(true);
+//                }
+//                else{
+//                    checkStateD[position] = false;
+//                    viewHolder.checkBoxD.setChecked(false);
+//                }
             }
 
             //set onclick listener to viewholder checkboxes (SOCIAL) and store this data in convertView
@@ -188,32 +188,28 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 checkState[position] = !checkState[position];
                 notifyDataSetChanged();
                 }
-
-
             });
 
             //set onclick listener to viewholder checkboxes (DESK) and store this data in convertView
-            viewHolder.checkBoxD.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
-                    // aka remove from settings (social
-                    if(checkStateD[position]) {
-                        selectedAppsPackageNameDesk.remove(installedApps.get(position).packageName);
-                        editor.putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk).apply();
-                    }
-                    // else if checkbox was unclicked, click checkbox and add the app to selectedAppsPackageName
-                    // aka add to settings (desk
-                    else {
-                        selectedAppsPackageNameDesk.add(installedApps.get(position).packageName);
-                        editor.putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk).apply();
-                    }
-                    checkStateD[position] = !checkStateD[position];
-                    notifyDataSetChanged();
-                }
-
-
-            });
+//            viewHolder.checkBoxD.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                    // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
+//                    // aka remove from settings (social
+//                    if(checkStateD[position]) {
+//                        selectedAppsPackageNameDesk.remove(installedApps.get(position).packageName);
+//                        editor.putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk).apply();
+//                    }
+//                    // else if checkbox was unclicked, click checkbox and add the app to selectedAppsPackageName
+//                    // aka add to settings (desk
+//                    else {
+//                        selectedAppsPackageNameDesk.add(installedApps.get(position).packageName);
+//                        editor.putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk).apply();
+//                    }
+//                    checkStateD[position] = !checkStateD[position];
+//                    notifyDataSetChanged();
+//                }
+//                });
             return convertView;
         }
     }
@@ -223,7 +219,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
         ImageView thumbnail;
         TextView title;
         CheckBox checkBox;
-        CheckBox checkBoxD;
+       // CheckBox checkBoxD;
     }
 
     // if the screen is paused go back and safe the sellected apps of
@@ -232,7 +228,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
     protected void onPause() {
         editor.clear()
                 .putStringSet("selectedAppsPackage", selectedAppsPackageName)
-                .putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk)
+               // .putStringSet("selectedAppsPackageD", selectedAppsPackageNameDesk)
                 .commit();
         super.onPause();
     }
