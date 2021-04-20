@@ -72,7 +72,7 @@ public class Overlay extends Service {
             if(closedApps.containsKey(fgApp)){
                 //if app has already been opend once change the message (but still close app)
                 if((int)closedApps.get(fgApp) >= 0) {
-                    goHo me();
+                    goHome();
                     displayToast(getString(R.string.close_app_driving));
                     closedApps.put(fgApp, (int)closedApps.get(fgApp)+1);
                 }
