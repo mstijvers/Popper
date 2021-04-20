@@ -72,25 +72,17 @@
         android:textColor="@color/black" />
 
     <Button
-        android:id="@+id/appsButtonSocial"
+        android:id="@+id/appsButton"
         android:layout_width="100dp"
         android:layout_height="75dp"
         android:layout_below="@+id/switchOtherAppsSocial"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/choose_apps_social"
-        android:theme="@style/ListAppsButton" />
-
-    <Button
-        android:id="@+id/appsButtonDesk"
-        android:layout_width="100dp"
-        android:layout_height="75dp"
-        android:layout_below="@+id/switchOtherAppsDesk"
         android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
         android:layout_marginStart="24dp"
         android:layout_marginTop="60dp"
-        android:text="@string/choose_apps_desk"
+        android:layout_marginEnd="24dp"
+        android:text="@string/choose_apps"
         android:theme="@style/ListAppsButton" />
+
 
 </RelativeLayout>

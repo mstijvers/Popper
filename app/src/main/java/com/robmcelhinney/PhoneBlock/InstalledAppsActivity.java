@@ -96,17 +96,24 @@ public class InstalledAppsActivity extends AppCompatActivity {
         @NonNull
         @Override
         public View getView(final int position, View convertView, @NonNull ViewGroup parent) {
+            //make a new viewholder
             ViewHolder viewHolder = new ViewHolder();
+            //get the arraylist of apps tat are selected (for social package?)
             selectedAppsPackageName = new HashSet<>(settings.getStringSet("selectedAppsPackage", new HashSet<String>()));
+
+            //if ther is no convertView, then make one, with viewholder. so convertView stores the data of View basically.
             if(convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(layout, parent, false);
                 viewHolder.thumbnail = convertView.findViewById(R.id.listItemThumbnail);
                 viewHolder.title = convertView.findViewById(R.id.listItemText);
+                //checks state of social list checkboxes
                 viewHolder.checkBox = convertView.findViewById(R.id.listCheckBoxSocial);
 
                 viewHolder.title.setText(installedApps.get(position).loadLabel(getApplicationContext().getPackageManager()));
                 viewHolder.thumbnail.setImageDrawable(installedApps.get(position).loadIcon(getApplicationContext().getPackageManager()));
 
+                //for the strings that are also in the list of installed apps set the checkbox to true
+                // else set the checkbox to false.
                 if(selectedAppsPackageName.contains(installedApps.get(position).packageName)) {
                     viewHolder.checkBox.setChecked(true);
                     checkState[position] = true;
@@ -117,10 +124,14 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 }
                 convertView.setTag(viewHolder);
             }
+            //if convertView does exist, set the viewholder to the data stored iin convertView
             else {
                 viewHolder = (ViewHolder) convertView.getTag();
                 viewHolder.title.setText(installedApps.get(position).loadLabel(getApplicationContext().getPackageManager()));
                 viewHolder.thumbnail.setImageDrawable(installedApps.get(position).loadIcon(getApplicationContext().getPackageManager()));
+
+                //for the strings that are also in the list of installed apps set the checkbox to true
+                // else set the checkbox to false.
                 if(settings.getStringSet("selectedAppsPackage", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
                     checkState[position] = true;
                     viewHolder.checkBox.setChecked(true);
@@ -131,13 +142,18 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 }
             }
 
+            //set onclick listener to viewholder checkboxes (social) and store this data in convertView
             viewHolder.checkBox.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
+                    // aka remove from settings (social
                 if(checkState[position]) {
                     selectedAppsPackageName.remove(installedApps.get(position).packageName);
                     editor.putStringSet("selectedAppsPackage", selectedAppsPackageName).apply();
                 }
+                // else if checkbox was unclicked, click checkbox and add the app to selectedAppsPackageName
+                // aka add to settings (social
                 else {
                     selectedAppsPackageName.add(installedApps.get(position).packageName);
                     editor.putStringSet("selectedAppsPackage", selectedAppsPackageName).apply();
@@ -150,12 +166,15 @@ public class InstalledAppsActivity extends AppCompatActivity {
         }
     }
 
+    //items of ViewHolder
     public class ViewHolder {
         ImageView thumbnail;
         TextView title;
         CheckBox checkBox;
     }
 
+    // if the screen is paused go back and safe the sellected apps of
+    // selectedAppsPackageName in "SelectedAppsPackage" file for later use.
     @Override
     protected void onPause() {
         editor.clear()
@@ -185,6 +204,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
     @SuppressLint("StaticFieldLeak")
     private class LoadApplications extends AsyncTask<Void, Void, Void> {
 
+        //loading screen
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -197,6 +217,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
             animateView(progressOverlay, View.GONE, 0);
         }
 
+        //In background
         @Override
         protected Void doInBackground(Void... params) {
             userInstalledApps();

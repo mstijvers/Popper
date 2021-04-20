@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Social button to go to list
-        Button appsButtonSocial = findViewById(R.id.appsButtonSocial);
+        Button appsButtonSocial = findViewById(R.id.appsButton);
         final Intent installedAppsActivityIntentSocial = new Intent(this, InstalledAppsActivity.class);
         appsButtonSocial.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Social button to go to list
-        Button appsButtonDesk = findViewById(R.id.appsButtonDesk);
+        Button appsButtonDesk = findViewById(R.id.appsButton);
         final Intent installedAppsActivityIntentDesk = new Intent(this, InstalledAppsActivity.class);
         appsButtonDesk.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,29 +125,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//        switchDetection = findViewById(R.id.switchDetection);
-//        switchDetection.setChecked(settings.getBoolean("switchkey", false));
-//        switchDetection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
-//                        checkPermission(getApplicationContext());
-//                        switchDetection.setChecked(false);
-//                    }
-//                    else{
-//                        startDetectDrivingService();
-//                        editor.putBoolean("switchkey", true);
-//                    }
-//                } else {
-//                    if(!settings.getBoolean("switchBT", false)) {
-//                        stopDetectDrivingService();
-//                    }
-//                    editor.putBoolean("switchkey", false);
-//                }
-//                editor.apply();
-//            }
-//        });
 
         Switch switchBT = findViewById(R.id.switchBT);
         switchBT.setChecked(settings.getBoolean("switchBT", false));

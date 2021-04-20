@@ -27,6 +27,7 @@ public class Overlay extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        //get shared preferences (data list of checkmarks) with the string MY_PREFS_NAME
         settings = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         appChecker = new AppChecker();
         closedApps = new HashMap<>();
@@ -44,6 +45,7 @@ public class Overlay extends Service {
         super.onDestroy();
     }
 
+    // when this is called then CloseApps is run.
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -61,6 +63,9 @@ public class Overlay extends Service {
         handler.postDelayed(runnable, 3000);
     }
 
+    // Everything below is for looking wether the app is in the list of selected apps (not to disturb)
+    // and displaying a popup, and sending you back to home.
+    // Close apps when app is in (Hash)set 'selectedAppsPackage' Saved in *settings*.
     private void closeApps() {
         String fgApp = getForegroundApp();
         if (fgApp != null && settings.getStringSet("selectedAppsPackage", new HashSet<String>()).contains(fgApp)) {
@@ -76,7 +81,7 @@ public class Overlay extends Service {
             closedApps.put(fgApp, 0);
         }
     }
-
+    //Go to home screen after app is closed
     private void goHome() {
         Intent homeIntent = new Intent(Intent.ACTION_MAIN)
                 .addCategory(Intent.CATEGORY_HOME)
