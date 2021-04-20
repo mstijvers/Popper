@@ -117,6 +117,7 @@ public class DisturbService extends Service{
         stopOverlayService();
     }
 
+    //start or stop the overlay for the app that is open(ed)
     private static void startOverlayService() {
         Intent intent = new Intent(appContext, Overlay.class);
         appContext.startService(intent);

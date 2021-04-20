@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
         if (!PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getBoolean("pref_previously_started", false)) {
             startActivity(new Intent(MainActivity.this, PermissionsSplashActivity.class));
         }
-
+        //check if toggle button is active
         toggleButtonActive = findViewById(R.id.toggleButtonActive);
         toggleButtonActive.setChecked(false);
         toggleButtonActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -82,25 +82,15 @@ public class MainActivity extends AppCompatActivity {
 
         // Social button to go to list
         Button appsButtonSocial = findViewById(R.id.appsButton);
-        final Intent installedAppsActivityIntentSocial = new Intent(this, InstalledAppsActivity.class);
+        final Intent installedAppsActivityIntent = new Intent(this, InstalledAppsActivity.class);
         appsButtonSocial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                installedAppsActivityIntentSocial.putExtra(Button_list_Activity,"SOCIAL");
-                startActivity(installedAppsActivityIntentSocial);
+                installedAppsActivityIntent.putExtra(Button_list_Activity,"Button");
+                startActivity(installedAppsActivityIntent);
             }
         });
 
-        // Social button to go to list
-        Button appsButtonDesk = findViewById(R.id.appsButton);
-        final Intent installedAppsActivityIntentDesk = new Intent(this, InstalledAppsActivity.class);
-        appsButtonDesk.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                installedAppsActivityIntentDesk.putExtra(Button_list_Activity,"DESK");
-                startActivity(installedAppsActivityIntentDesk);
-            }
-        });
 
         switchDetection = findViewById(R.id.switchDetection);
         switchDetection.setChecked(settings.getBoolean("switchkey", false));
