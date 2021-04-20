@@ -117,7 +117,7 @@ public class DisturbService extends Service{
         }
 
         sendToMainActivity(false);
-        DetectDrivingService.setSittingIntoCar(false);
+//        DetectDrivingService.setSittingIntoCar(false);
         UtilitiesService.setActive(false);
         stopOverlayService();
     }

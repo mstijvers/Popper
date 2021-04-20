@@ -261,17 +261,17 @@ public class MainActivity extends AppCompatActivity {
         stopService(intent);
     }
 
+    // Should be deleted later
     private void startDetectDrivingService() {
-        Intent intent = new Intent(this, DetectDrivingService.class);
-        startService(intent);
+
     }
 
     private void stopDetectDrivingService() {
-        Intent intent = new Intent(this, DetectDrivingService.class);
-        stopService(intent);
+
     }
 
-   //call Stop and start Disturb service
+   // Call Stop and start Disturb service
+    // IMPORTANT
     private void startDisturbService() {
         Intent intent = new Intent(this, DisturbService.class);
         startService(intent);
