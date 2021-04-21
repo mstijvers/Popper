@@ -81,9 +81,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Social button to go to list
-        Button appsButtonSocial = findViewById(R.id.appsButton);
+        Button appsButtonList = findViewById(R.id.appsButton);
         final Intent installedAppsActivityIntent = new Intent(this, InstalledAppsActivity.class);
-        appsButtonSocial.setOnClickListener(new View.OnClickListener() {
+        appsButtonList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 installedAppsActivityIntent.putExtra(Button_list_Activity,"Button");

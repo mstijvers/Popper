@@ -67,8 +67,25 @@ public class Overlay extends Service {
     // and displaying a popup, and sending you back to home.
     // Close apps when app is in (Hash)set 'selectedAppsPackage' Saved in *settings*.
     private void closeApps() {
+        boolean stateSocialActive = settings.getBoolean("switchOtherApps", false);
+        boolean stateDeskActive = settings.getBoolean("switchOtherAppsDesk", false);
         String fgApp = getForegroundApp();
-        if (fgApp != null && (settings.getStringSet("selectedAppsPackageSocial", new HashSet<String>()).contains(fgApp)) || settings.getStringSet("selectedAppsPackageDesk", new HashSet<String>()).contains(fgApp)) {
+        if (fgApp != null && settings.getStringSet("selectedAppsPackageSocial", new HashSet<String>()).contains(fgApp) && stateSocialActive) {
+            if(closedApps.containsKey(fgApp)){
+                //if app has already been opend once change the message (but still close app)
+                if((int)closedApps.get(fgApp) >= 0) {
+                    goHome();
+                    displayToast(getString(R.string.close_app_driving));
+                    closedApps.put(fgApp, (int)closedApps.get(fgApp)+1);
+                }
+                return;
+            }
+            //close app when opened for the first time with message.
+            goHome();
+            displayToast(getString(R.string.blocked_app_warning));
+            closedApps.put(fgApp, 0);
+        }
+        if (fgApp != null && settings.getStringSet("selectedAppsPackageDesk", new HashSet<String>()).contains(fgApp) && stateDeskActive) {
             if(closedApps.containsKey(fgApp)){
                 //if app has already been opend once change the message (but still close app)
                 if((int)closedApps.get(fgApp) >= 0) {

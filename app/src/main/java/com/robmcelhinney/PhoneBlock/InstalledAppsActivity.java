@@ -89,14 +89,16 @@ public class InstalledAppsActivity extends AppCompatActivity {
 
     private class MyListAdapter extends ArrayAdapter<String> {
         private int layout;
-        boolean checkStateSocial[];
-        boolean checkStateDesk[];
+
+        // define whether the list item was already checked.
+        boolean checkStateListItemSocial[];
+        boolean checkStateListItemDesk[];
 
         MyListAdapter(Context context, List<String> objects) {
             super(context, R.layout.list_item, objects);
             layout = R.layout.list_item;
-            checkStateSocial = new boolean[objects.size()];
-            checkStateDesk = new boolean[objects.size()];
+            checkStateListItemSocial = new boolean[objects.size()];
+            checkStateListItemDesk = new boolean[objects.size()];
         }
 
         @NonNull
@@ -125,21 +127,21 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 //Social
                 if(selectedAppsPackageNameSocial.contains(installedApps.get(position).packageName)) {
                     viewHolder.checkBoxSocial.setChecked(true);
-                    checkStateSocial[position] = true;
+                    checkStateListItemSocial[position] = true;
                 }
                 else{
                     viewHolder.checkBoxSocial.setChecked(false);
-                    checkStateSocial[position] = false;
+                    checkStateListItemSocial[position] = false;
                 }
 
                 //Desk
                 if(selectedAppsPackageNameDesk.contains(installedApps.get(position).packageName)) {
                     viewHolder.checkBoxDesk.setChecked(true);
-                    checkStateDesk[position] = true;
+                    checkStateListItemDesk[position] = true;
                 }
                 else{
                     viewHolder.checkBoxDesk.setChecked(false);
-                    checkStateDesk[position] = false;
+                    checkStateListItemDesk[position] = false;
                 }
                 convertView.setTag(viewHolder);
             }
@@ -153,21 +155,21 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 // else set the checkbox to false.
                 // Social
                 if(settings.getStringSet("selectedAppsPackageSocial", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
-                    checkStateSocial[position] = true;
+                    checkStateListItemSocial[position] = true;
                     viewHolder.checkBoxSocial.setChecked(true);
                 }
                 else{
-                    checkStateSocial[position] = false;
+                    checkStateListItemSocial[position] = false;
                     viewHolder.checkBoxSocial.setChecked(false);
                 }
 
                 // Desk
                 if(settings.getStringSet("selectedAppsPackageDesk", new HashSet<String>()).contains(installedApps.get(position).packageName)) {
-                    checkStateDesk[position] = true;
+                    checkStateListItemDesk[position] = true;
                     viewHolder.checkBoxDesk.setChecked(true);
                 }
                 else{
-                    checkStateDesk[position] = false;
+                    checkStateListItemDesk[position] = false;
                     viewHolder.checkBoxDesk.setChecked(false);
                 }
             }
@@ -178,7 +180,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
                     // aka remove from settings (social
-                if(checkStateSocial[position]) {
+                if(checkStateListItemSocial[position]) {
                     selectedAppsPackageNameSocial.remove(installedApps.get(position).packageName);
                     editor.putStringSet("selectedAppsPackageSocial", selectedAppsPackageNameSocial).apply();
                 }
@@ -188,7 +190,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
                     selectedAppsPackageNameSocial.add(installedApps.get(position).packageName);
                     editor.putStringSet("selectedAppsPackageSocial", selectedAppsPackageNameSocial).apply();
                 }
-                checkStateSocial[position] = !checkStateSocial[position];
+                checkStateListItemSocial[position] = !checkStateListItemSocial[position];
                 notifyDataSetChanged();
                 }
             });
@@ -199,7 +201,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     // if checkbox was clicked, unclick checkbox and remove the app from selectedAppsPackageName
                     // aka remove from settings (social
-                    if(checkStateDesk[position]) {
+                    if(checkStateListItemDesk[position]) {
                         selectedAppsPackageNameDesk.remove(installedApps.get(position).packageName);
                         editor.putStringSet("selectedAppsPackageDesk", selectedAppsPackageNameDesk).apply();
                     }
@@ -209,7 +211,7 @@ public class InstalledAppsActivity extends AppCompatActivity {
                         selectedAppsPackageNameDesk.add(installedApps.get(position).packageName);
                         editor.putStringSet("selectedAppsPackageDesk", selectedAppsPackageNameDesk).apply();
                     }
-                    checkStateDesk[position] = !checkStateDesk[position];
+                    checkStateListItemDesk[position] = !checkStateListItemDesk[position];
                     notifyDataSetChanged();
                 }
                 });
