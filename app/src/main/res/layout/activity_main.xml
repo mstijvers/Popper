@@ -8,7 +8,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="@color/grey"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.robmcelhinney.PhoneBlock.MainActivity">
+    tools:context="com.fbp.Popper.MainActivity">
 
 
 

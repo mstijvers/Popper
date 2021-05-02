@@ -1,4 +1,4 @@
-package com.robmcelhinney.PhoneBlock;
+package com.fbp.Popper;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.robmcelhinney.PhoneBlock.MainActivity.MY_PREFS_NAME;
+import static com.fbp.Popper.MainActivity.MY_PREFS_NAME;
 
 public class InstalledAppsActivity extends AppCompatActivity {
     private static final String PACKAGE_NAME = "com.robmcelhinney.PhoneBlock";
