@@ -1,4 +1,4 @@
-package com.robmcelhinney.popper;
+package com.robmcelhinney.PhoneBlock;
 
 import android.app.AppOpsManager;
 import android.app.NotificationManager;
@@ -20,8 +20,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
-
-import com.fbp.popper.R;
+import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CODE_OVERLAY = 123;
     private final static int REQUEST_CODE_USAGE = 124;
 
-    public static final String CHANNEL_ID = "com.robmcelhinney.popper.ANDROID";
+    public static final String CHANNEL_ID = "com.robmcelhinney.PhoneBlock.ANDROID";
     public static final String Button_list_Activity = null;
 
     @Override
