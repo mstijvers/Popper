@@ -63,11 +63,11 @@ public class Overlay extends Service {
         handler.postDelayed(runnable, 3000);
     }
 
-    // Everything below is for looking wether the app is in the list of selected apps (not to disturb)
+    // Everything below is for looking whether the app is in the list of selected apps (not to disturb)
     // and displaying a popup, and sending you back to home.
     // Close apps when app is in (Hash)set 'selectedAppsPackage' Saved in *settings*.
     private void closeApps() {
-        boolean stateSocialActive = settings.getBoolean("switchOtherApps", false);
+        boolean stateSocialActive = settings.getBoolean("switchOtherAppsSocial", false);
         boolean stateDeskActive = settings.getBoolean("switchOtherAppsDesk", false);
         String fgApp = getForegroundApp();
         if (fgApp != null && settings.getStringSet("selectedAppsPackageSocial", new HashSet<String>()).contains(fgApp) && stateSocialActive) {

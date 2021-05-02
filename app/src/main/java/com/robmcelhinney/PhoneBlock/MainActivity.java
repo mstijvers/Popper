@@ -132,12 +132,12 @@ public class MainActivity extends AppCompatActivity {
 
         // switch other social apps 
         switchOtherAppsSocial = findViewById(R.id.switchOtherAppsSocial);
-        switchOtherAppsSocial.setChecked(settings.getBoolean("switchOtherApps", false));
+        switchOtherAppsSocial.setChecked(settings.getBoolean("switchOtherAppsSocial", false));
         switchOtherAppsSocial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if (isChecked) {
-                editor.putBoolean("switchOtherApps", true);
+                editor.putBoolean("switchOtherAppsSocial", true);
                 //checks if is view app running in Foreground.
                 //checks whether premission is granted to block other applications while driving
                 try {
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     switchOtherAppsSocial.setChecked(false);
                 }
             } else {
-                editor.putBoolean("switchOtherApps", false);
+                editor.putBoolean("switchOtherAppsSocial", false);
             }
             editor.commit();
             }

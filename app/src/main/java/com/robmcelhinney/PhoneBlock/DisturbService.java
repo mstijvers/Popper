@@ -89,11 +89,14 @@ public class DisturbService extends Service{
         sendToMainActivity(true);
 
         UtilitiesService.setUserNotDriving(false);
-    // if switch other app boolean is set  to false start overlay service
-        if(settings.getBoolean("switchOtherApps", false)) {
+
+        // if switch other app boolean is set  to false start overlay service
+        if(settings.getBoolean("switchOtherAppsSocial", false)) {
             startOverlayService();
             Log.d("MyActivity", "Switch appsS button Entered ");
-        } else if(settings.getBoolean("switchOtherAppsDesk", false)) {
+        }
+
+        if(settings.getBoolean("switchOtherAppsDesk", false)) {
             Log.d("MyActivity", "Switch appsD button Entered");
             startOverlayService();
         }
