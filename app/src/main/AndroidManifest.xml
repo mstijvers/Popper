@@ -43,15 +43,9 @@
 
         <service android:name="com.robmcelhinney.PhoneBlock.ActivityRecognisedService"
             android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.ChangeDNDService"
-            android:exported="false" />
         <service android:name="com.robmcelhinney.PhoneBlock.DetectDrivingService"
             android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.DisturbService"
-            android:exported="false" />
         <service android:name="com.robmcelhinney.PhoneBlock.Overlay"
-            android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.UtilitiesService"
             android:exported="false" />
 
         <activity android:name="com.robmcelhinney.PhoneBlock.PermissionsSplashActivity" android:screenOrientation="portrait">

@@ -24,13 +24,11 @@ import android.widget.ToggleButton;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Switch switchDetection;
+
     private Switch switchOtherAppsSocial;
     private Switch switchOtherAppsDesk;
+    private static Context appContext;
 
-    private ToggleButton toggleButtonActive;
-
-    //what if we make two MyPrefs File? one for SOCIAL and ONE for Desk
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     private SharedPreferences settings;
     private SharedPreferences.Editor editor;
@@ -41,44 +39,20 @@ public class MainActivity extends AppCompatActivity {
     public static final String CHANNEL_ID = "com.robmcelhinney.PhoneBlock.ANDROID";
     public static final String Button_list_Activity = null;
 
-
-    private static NotificationManager mNotificationManager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
-        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        startDisturbService();
-        startDNDService();
-        startUtiliesService();
         settings = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         editor = settings.edit();
+        appContext = getApplicationContext();
 
         // Splash Screen first time launch
         if (!PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getBoolean("pref_previously_started", false)) {
             startActivity(new Intent(MainActivity.this, PermissionsSplashActivity.class));
         }
-        //check if toggle button is active
-        toggleButtonActive = findViewById(R.id.toggleButtonActive);
-        toggleButtonActive.setChecked(false);
-        toggleButtonActive.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-                if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
-                    checkPermission(getApplicationContext());
-                    toggleButtonActive.setChecked(false);
-                }
-                else{
-                    DisturbService.doNotDisturb();
-                }
-            } else {
-                DisturbService.userSelectedDoDisturb();
-            }
-            }
-        });
 
         // Social button to go to list
         Button appsButtonList = findViewById(R.id.appsButton);
@@ -91,44 +65,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-        switchDetection = findViewById(R.id.switchDetection);
-        switchDetection.setChecked(settings.getBoolean("switchkey", false));
-        switchDetection.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-                if (!mNotificationManager.isNotificationPolicyAccessGranted()) {
-                    checkPermission(getApplicationContext());
-                    switchDetection.setChecked(false);
-                }
-                else{
-                    startDetectDrivingService();
-                    editor.putBoolean("switchkey", true);
-                }
-            } else {
-                if(!settings.getBoolean("switchBT", false)) {
-                    stopDetectDrivingService();
-                }
-                editor.putBoolean("switchkey", false);
-            }
-            editor.apply();
-            }
-        });
-
-
-        Switch switchBT = findViewById(R.id.switchBT);
-        switchBT.setChecked(settings.getBoolean("switchBT", false));
-        switchBT.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            editor.putBoolean("switchBT", isChecked);
-            editor.commit();
-                if(!settings.getBoolean("switchkey", false)) {
-                    stopDetectDrivingService();
-                }
-            }
-        });
 
         // switch other social apps 
         switchOtherAppsSocial = findViewById(R.id.switchOtherAppsSocial);
@@ -164,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
                     switchOtherAppsSocial.setChecked(false);
                 }
+                startOverlayService();
             } else {
                 editor.putBoolean("switchOtherAppsSocial", false);
             }
@@ -204,26 +141,17 @@ public class MainActivity extends AppCompatActivity {
 
                         switchOtherAppsDesk.setChecked(false);
                     }
+                    startOverlayService();
                 } else {
                     editor.putBoolean("switchOtherAppsDesk", false);
+
                 }
                 editor.commit();
             }
         });
 
-
-        if (switchDetection.isChecked()) {
-            startDetectDrivingService();
-        }
-
-
         LocalBroadcastManager.getInstance(this).registerReceiver(
             mMessageReceiverToggleButton, new IntentFilter("intentToggleButton"));
-    }
-
-    private void startUtiliesService() {
-        Intent intent = new Intent(this, UtilitiesService.class);
-        startService(intent);
     }
 
     private final BroadcastReceiver mMessageReceiverToggleButton = new BroadcastReceiver() {
@@ -231,55 +159,17 @@ public class MainActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
         // Get extra data included in the Intent
         boolean value = intent.getBooleanExtra("valueBool", false);
-        toggleButtonActive.setChecked(value);
         }
     };
 
     @Override
     protected void onDestroy() {
-        // Do not destroy these services as they should continue when app has been destroyed to save
-        // space.
-        stopDetectDrivingService();
-        stopDisturbService();
-        stopDNDService();
-
         super.onDestroy();
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-    }
-
-    private void startDNDService() {
-        Intent intent = new Intent(this, ChangeDNDService.class);
-        startService(intent);
-    }
-
-    private void stopDNDService() {
-        Intent intent = new Intent(this, ChangeDNDService.class);
-        stopService(intent);
-    }
-
-    // Should be deleted later
-    private void startDetectDrivingService() {
-
-    }
-
-    private void stopDetectDrivingService() {
-
-    }
-
-   // Call Stop and start Disturb service
-    // IMPORTANT
-    private void startDisturbService() {
-        Intent intent = new Intent(this, DisturbService.class);
-        startService(intent);
-    }
-
-    private void stopDisturbService() {
-        Intent intent = new Intent(this, DisturbService.class);
-        stopService(intent);
     }
 
     public static void checkPermission(Context context) {
@@ -289,6 +179,17 @@ public class MainActivity extends AppCompatActivity {
         if (!notificationManager.isNotificationPolicyAccessGranted()) {
             context.startActivity(new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS));
         }
+    }
+
+    //start or stop the overlay for the app that is open(ed)
+    private static void startOverlayService() {
+        Intent intent = new Intent(appContext, Overlay.class);
+        appContext.startService(intent);
+    }
+
+    private static void stopOverlayService() {
+        Intent intent = new Intent(appContext, Overlay.class);
+        appContext.stopService(intent);
     }
 }
 
