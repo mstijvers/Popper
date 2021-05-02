@@ -35,18 +35,32 @@
         android:text="@string/block_apps_desk"
         android:textColor="@color/black" />
 
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/ImageViewToken"
+        android:layout_width="match_parent"
+        android:layout_height="450dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:maxHeight="50dp"
+        android:layout_below="@id/switchOtherAppsDesk"
+    />
+
     <Button
         android:id="@+id/appsButton"
-        android:layout_width="100dp"
-        android:layout_height="75dp"
-        android:layout_below="@+id/switchOtherAppsSocial"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_below="@+id/ImageViewToken"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="100dp"
         android:text="@string/choose_apps"
-        android:theme="@style/ListAppsButton" />
+        android:theme="@style/ListAppsButton"
+
+
+        />
 
 
 </RelativeLayout>

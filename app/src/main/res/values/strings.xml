@@ -7,7 +7,7 @@
     <string name="action_settings">Settings</string>
     <string name="block_apps_social">Block Apps Social</string>
     <string name="block_apps_desk">Block Apps Desk</string>
-    <string name="choose_apps">Choose App Constraints</string>
+    <string name="choose_apps">APPS</string>
     <string name="checkboxes">SOCIAL DESK</string>
     <string name="go">Go</string>
     <string name="without_these_permissions_we_will_be_unable_to_activate_the_block_while_driving">Without these permissions, we will be unable to activate the block while driving.</string>
