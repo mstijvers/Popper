@@ -1,4 +1,4 @@
-package com.robmcelhinney.PhoneBlock;
+package com.robmcelhinney.popper;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fbp.popper.R;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,10 +29,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.robmcelhinney.PhoneBlock.MainActivity.MY_PREFS_NAME;
+import static com.robmcelhinney.popper.MainActivity.MY_PREFS_NAME;
 
 public class InstalledAppsActivity extends AppCompatActivity {
-    private static final String PACKAGE_NAME = "com.robmcelhinney.PhoneBlock";
+    private static final String PACKAGE_NAME = "com.robmcelhinney.popper";
     private List<ApplicationInfo> installedApps;
     private ArrayList<String> installedAppsNames;
 

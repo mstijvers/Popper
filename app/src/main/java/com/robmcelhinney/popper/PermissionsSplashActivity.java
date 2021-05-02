@@ -1,4 +1,4 @@
-package com.robmcelhinney.PhoneBlock;
+package com.robmcelhinney.popper;
 
 import android.app.NotificationManager;
 import android.content.Context;
@@ -10,6 +10,8 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
+import com.fbp.popper.R;
 
 // give permissions to close other apps. don't touch this file. works fine.
 public class PermissionsSplashActivity extends AppCompatActivity {

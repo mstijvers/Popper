@@ -1,4 +1,4 @@
-package com.robmcelhinney.PhoneBlock;
+package com.robmcelhinney.popper;
 
 import android.app.Service;
 import android.content.Intent;
@@ -8,12 +8,13 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.fbp.popper.R;
 import com.rvalerio.fgchecker.AppChecker;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
-import static com.robmcelhinney.PhoneBlock.MainActivity.MY_PREFS_NAME;
+import static com.robmcelhinney.popper.MainActivity.MY_PREFS_NAME;
 //close apps and display overlay message 'don't open app.' or another message.
 public class Overlay extends Service {
 
