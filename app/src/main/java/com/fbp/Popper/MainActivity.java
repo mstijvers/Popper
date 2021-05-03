@@ -15,13 +15,20 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.widget.ToggleButton;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,9 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_OVERLAY = 123;
     private final static int REQUEST_CODE_USAGE = 124;
+    private static final int REQUEST_ENABLE_BT = 0;
+    private static final int REQUEST_DISCOVER_BT = 1;
 
     public static final String CHANNEL_ID = "com.robmcelhinney.PhoneBlock.ANDROID";
     public static final String Button_list_Activity = null;
+
+    BluetoothAdapter mBlueAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +60,24 @@ public class MainActivity extends AppCompatActivity {
         settings = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         editor = settings.edit();
         appContext = getApplicationContext();
+        mBlueAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (mBlueAdapter == null){
+            Log.d("MyActivity", "No Bluetooth available");
+            finish();
+        } else {
+            Log.d("MyActivity", "Bluetooth is available");
+        }
+
+
+        startTokenImageChanger();
 
         // Splash Screen first time launch
         if (!PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getBoolean("pref_previously_started", false)) {
             startActivity(new Intent(MainActivity.this, PermissionsSplashActivity.class));
         }
+
+
 
         // Social button to go to list
         Button appsButtonList = findViewById(R.id.appsButton);
@@ -152,9 +176,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         LocalBroadcastManager.getInstance(this).registerReceiver(
             mMessageReceiverToggleButton, new IntentFilter("intentToggleButton"));
+
     }
+
+
 
     private final BroadcastReceiver mMessageReceiverToggleButton = new BroadcastReceiver() {
         @Override
