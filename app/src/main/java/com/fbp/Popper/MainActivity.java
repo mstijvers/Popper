@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CODE_OVERLAY = 123;
     private final static int REQUEST_CODE_USAGE = 124;
 
-    public static final String CHANNEL_ID = "com.robmcelhinney.PhoneBlock.ANDROID";
+  //  public static final String CHANNEL_ID = "com.robmcelhinney.PhoneBlock.ANDROID";
     public static final String Button_list_Activity = null;
 
     @Override
@@ -99,10 +99,12 @@ public class MainActivity extends AppCompatActivity {
                     startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
 
                     switchOtherAppsSocial.setChecked(false);
+                    startTokenImage();
                 }
                 startOverlayService();
             } else {
                 editor.putBoolean("switchOtherAppsSocial", false);
+                startTokenImage();
             }
             editor.commit();
             }
@@ -140,11 +142,12 @@ public class MainActivity extends AppCompatActivity {
                         startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
 
                         switchOtherAppsDesk.setChecked(false);
+                        startTokenImage();
                     }
                     startOverlayService();
                 } else {
                     editor.putBoolean("switchOtherAppsDesk", false);
-
+                    startTokenImage();
                 }
                 editor.commit();
             }
@@ -187,6 +190,10 @@ public class MainActivity extends AppCompatActivity {
         appContext.startService(intent);
     }
 
+    private static void startTokenImage(){
+        Intent intent = new Intent(appContext,TokenImage.class);
+        appContext.startService(intent);
+    }
     private static void stopOverlayService() {
         Intent intent = new Intent(appContext, Overlay.class);
         appContext.stopService(intent);
