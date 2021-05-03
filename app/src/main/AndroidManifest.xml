@@ -48,10 +48,5 @@
         </activity>
         <activity android:name="com.fbp.Popper.InstalledAppsActivity" android:screenOrientation="portrait">
         </activity>
-
-        <item android:drawable="@drawable/Popper_Blue"></item>
-        <item android:drawable="@drawable/Popper_Both"></item>
-        <item android:drawable="@drawable/Popper_Gray"></item>
-        <item android:drawable="@drawable/Popper_Orange"></item>
     </application>
 </manifest>
