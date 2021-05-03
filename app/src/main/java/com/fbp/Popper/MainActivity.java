@@ -18,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -97,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                 if(!Settings.canDrawOverlays(MainActivity.this)) {
                     Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
                     startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
-
                     switchOtherAppsSocial.setChecked(false);
                 }
                 startOverlayService();
@@ -105,7 +105,9 @@ public class MainActivity extends AppCompatActivity {
                 editor.putBoolean("switchOtherAppsSocial", false);
             }
             editor.commit();
+                startTokenImageChanger();
             }
+
         });
 
 
@@ -144,9 +146,9 @@ public class MainActivity extends AppCompatActivity {
                     startOverlayService();
                 } else {
                     editor.putBoolean("switchOtherAppsDesk", false);
-
                 }
                 editor.commit();
+                startTokenImageChanger();
             }
         });
 
@@ -178,6 +180,22 @@ public class MainActivity extends AppCompatActivity {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (!notificationManager.isNotificationPolicyAccessGranted()) {
             context.startActivity(new Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS));
+        }
+    }
+
+    private void startTokenImageChanger() {
+        ImageView TokenImage = findViewById(R.id.ImageViewToken);
+        if(settings.getBoolean("switchOtherAppsDesk", true) && !settings.getBoolean("switchOtherAppsSocial", true)){
+            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_blue));
+        }
+        if(!settings.getBoolean("switchOtherAppsDesk", true) && settings.getBoolean("switchOtherAppsSocial", true)){
+            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_orange));
+        }
+        if(settings.getBoolean("switchOtherAppsDesk",true) && settings.getBoolean("switchOtherAppsSocial",true)){
+            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_both));
+        }
+        if(!settings.getBoolean("switchOtherAppsDesk",true) && !settings.getBoolean("switchOtherAppsSocial",true)){
+            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_gray));
         }
     }
 

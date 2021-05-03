@@ -44,6 +44,7 @@
         android:layout_marginStart="24dp"
         android:maxHeight="50dp"
         android:layout_below="@id/switchOtherAppsDesk"
+        android:background="@drawable/popper_gray"
     />
 
     <Button
