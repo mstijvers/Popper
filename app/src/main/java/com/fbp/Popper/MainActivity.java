@@ -15,6 +15,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     private Switch switchOtherAppsSocial;
     private Switch switchOtherAppsDesk;
     private static Context appContext;
+
+    Runnable runnable;
+
 
     public static final String MY_PREFS_NAME = "MyPrefsFile";
     private SharedPreferences settings;
@@ -90,54 +94,6 @@ public class MainActivity extends AppCompatActivity {
 
             BleImage.setBackgroundResource(R.drawable.ic_blue_on);
         }
-
-        //get list of paired devices
-        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-
-        // If there’s 1 or more paired devices...//
-        if (pairedDevices.size() >= 0) {
-
-            //...then loop through these devices and show in log for debugging purposes
-            for (BluetoothDevice device : pairedDevices) {
-                //Retrieve each device’s public identifier and MAC address. Add each device’s name and address to an ArrayAdapter, ready to incorporate into a
-                //ListView
-                String list_of_devices = device.getName() + "\n" + device.getAddress();
-                Log.d("MyActivity", list_of_devices);
-
-                //try to connect to desk token
-                if(device.getName().equals("DESK TOKEN")){
-                    Log.d("MyActivity", "Trying to Connect Desk");
-                    try {
-                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
-                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-
-                        //Now you will start the connection
-                        btSocket.connect();
-                        Log.d("MyActivity", "Connected Desk!");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                //try to connect to Social token
-                else if(device.getName().equals("SOCIAL TOKEN")) {
-                    Log.d("MyActivity", "Trying to Connect Social");
-                    try {
-                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
-                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-
-                        //Now you will start the connection
-                        btSocket.connect();
-                        Log.d("MyActivity", "Connected Social!");
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-
-
-
 
         //make device discoverable for 400 milli sec.
         Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -257,6 +213,65 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+
+        final Handler handler = new Handler();
+        handler.postDelayed(runnable = new Runnable() {
+            @Override
+            public void run() {
+                handler.postDelayed(runnable, 10000);
+
+               //if(!btSocket.isConnected()){
+                    //get list of paired devices
+                    Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+                    // If there’s 1 or more paired devices...//
+                    if (pairedDevices.size() >= 0) {
+
+                        //...then loop through these devices and show in log for debugging purposes
+                        for (BluetoothDevice device : pairedDevices) {
+                            //Retrieve each device’s public identifier and MAC address. Add each device’s name and address to an ArrayAdapter, ready to incorporate into a
+                            //ListView
+                            String list_of_devices = device.getName() + "\n" + device.getAddress();
+                            //Log.d("MyActivity", list_of_devices);
+
+                            //try to connect to desk token
+                            if(device.getName().equals("DESK TOKEN")){
+                                try {
+                                    btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
+                                    //Now you will start the connection
+                                    btSocket.connect();
+                                    Log.d("MyActivity", "Connected Desk!");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                            //try to connect to Social token
+                            else if(device.getName().equals("SOCIAL TOKEN")) {
+                                try {
+                                    btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
+                                    //Now you will start the connection
+                                    btSocket.connect();
+                                    Log.d("MyActivity", "Connected Social!");
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+               }
+                //}
+            //}
+        }, 5000);
+
+        super.onResume();
     }
 
     @Override
