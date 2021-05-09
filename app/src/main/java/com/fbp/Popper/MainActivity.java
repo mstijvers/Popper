@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,13 +19,19 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.io.IOException;
+import java.util.Set;
+import java.util.UUID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,9 +47,13 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQUEST_CODE_OVERLAY = 123;
     private final static int REQUEST_CODE_USAGE = 124;
     private static final int ENABLE_BT_REQUEST_CODE = 1;
+    public static final int REQUEST_DISCOVERABLE_CODE = 2;
+
+    static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     public static final String Button_list_Activity = null;
-    public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    public BluetoothSocket btSocket = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +73,11 @@ public class MainActivity extends AppCompatActivity {
 
         //Bluetooth connection
         ImageView BleImage = findViewById(R.id.BTEnabled);
-        if (bluetoothAdapter == null) {
+        if (mBluetoothAdapter == null) {
             //Display a toast notifying the user that their device doesn’t support Bluetooth//
             Toast.makeText(getApplicationContext(),"This device doesn’t support Bluetooth",Toast.LENGTH_SHORT).show();
         }
-        if (!bluetoothAdapter.isEnabled()) {
+        if (!mBluetoothAdapter.isEnabled()) {
             //Create an intent with the ACTION_REQUEST_ENABLE action, which we’ll use to display our system Activity//
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 
@@ -74,10 +86,64 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Enabling Bluetooth!", Toast.LENGTH_LONG).show();
             BleImage.setBackgroundResource(R.drawable.ic_blue_off);
         }
-        if(bluetoothAdapter.isEnabled()) {
+        if(mBluetoothAdapter.isEnabled()) {
 
             BleImage.setBackgroundResource(R.drawable.ic_blue_on);
         }
+
+        //get list of paired devices
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        // If there’s 1 or more paired devices...//
+        if (pairedDevices.size() >= 0) {
+
+            //...then loop through these devices and show in log for debugging purposes
+            for (BluetoothDevice device : pairedDevices) {
+                //Retrieve each device’s public identifier and MAC address. Add each device’s name and address to an ArrayAdapter, ready to incorporate into a
+                //ListView
+                String list_of_devices = device.getName() + "\n" + device.getAddress();
+                Log.d("MyActivity", list_of_devices);
+
+                //try to connect to desk token
+                if(device.getName().equals("DESK TOKEN")){
+                    Log.d("MyActivity", "Trying to Connect Desk");
+                    try {
+                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
+                        //Now you will start the connection
+                        btSocket.connect();
+                        Log.d("MyActivity", "Connected Desk!");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //try to connect to Social token
+                else if(device.getName().equals("SOCIAL TOKEN")) {
+                    Log.d("MyActivity", "Trying to Connect Social");
+                    try {
+                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
+                        //Now you will start the connection
+                        btSocket.connect();
+                        Log.d("MyActivity", "Connected Social!");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        //make device discoverable for 400 milli sec.
+        Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        //Specify how long the device will be discoverable for, in seconds.//
+        discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 400);
+        startActivity(discoveryIntent);
 
         // Social button to go to list
         Button appsButtonList = findViewById(R.id.appsButton);
