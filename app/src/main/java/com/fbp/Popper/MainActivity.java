@@ -1,7 +1,9 @@
 package com.fbp.Popper;
 
+import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.NotificationManager;
+import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -36,9 +38,10 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_OVERLAY = 123;
     private final static int REQUEST_CODE_USAGE = 124;
+    private static final int ENABLE_BT_REQUEST_CODE = 1;
 
-    public static final String CHANNEL_ID = "com.robmcelhinney.PhoneBlock.ANDROID";
     public static final String Button_list_Activity = null;
+    public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +53,30 @@ public class MainActivity extends AppCompatActivity {
         editor = settings.edit();
         appContext = getApplicationContext();
 
+
         // Splash Screen first time launch
         if (!PreferenceManager.getDefaultSharedPreferences(getBaseContext()).getBoolean("pref_previously_started", false)) {
             startActivity(new Intent(MainActivity.this, PermissionsSplashActivity.class));
+        }
+
+        //Bluetooth connection
+        ImageView BleImage = findViewById(R.id.BTEnabled);
+        if (bluetoothAdapter == null) {
+            //Display a toast notifying the user that their device doesn’t support Bluetooth//
+            Toast.makeText(getApplicationContext(),"This device doesn’t support Bluetooth",Toast.LENGTH_SHORT).show();
+        }
+        if (!bluetoothAdapter.isEnabled()) {
+            //Create an intent with the ACTION_REQUEST_ENABLE action, which we’ll use to display our system Activity//
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+
+            //Pass this intent to startActivityForResult(). ENABLE_BT_REQUEST_CODE is a locally defined integer that must be greater than 0,
+            startActivityForResult(enableIntent, ENABLE_BT_REQUEST_CODE);
+            Toast.makeText(getApplicationContext(), "Enabling Bluetooth!", Toast.LENGTH_LONG).show();
+            BleImage.setBackgroundResource(R.drawable.ic_blue_off);
+        }
+        if(bluetoothAdapter.isEnabled()) {
+
+            BleImage.setBackgroundResource(R.drawable.ic_blue_on);
         }
 
         // Social button to go to list
@@ -205,9 +229,26 @@ public class MainActivity extends AppCompatActivity {
         appContext.startService(intent);
     }
 
-    private static void stopOverlayService() {
-        Intent intent = new Intent(appContext, Overlay.class);
-        appContext.stopService(intent);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        //Check what request we’re responding to//
+        if (requestCode == ENABLE_BT_REQUEST_CODE) {
+
+            //If the request was successful…//
+            if (resultCode == Activity.RESULT_OK) {
+
+                //...then display the following toast.//
+                Toast.makeText(getApplicationContext(), "Bluetooth has been enabled", Toast.LENGTH_SHORT).show();
+            }
+
+            //If the request was unsuccessful...//
+            if(resultCode == RESULT_CANCELED){
+
+                //...then display this alternative toast.//
+                Toast.makeText(getApplicationContext(), "An error occurred while attempting to enable Bluetooth", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 }
 
