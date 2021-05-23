@@ -30,7 +30,10 @@ import android.widget.Switch;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String Button_list_Activity = null;
     public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public BluetoothSocket btSocket = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,11 +99,13 @@ public class MainActivity extends AppCompatActivity {
             BleImage.setBackgroundResource(R.drawable.ic_blue_on);
         }
 
-        //make device discoverable for 400 milli sec.
-        Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        //Specify how long the device will be discoverable for, in seconds.//
-        discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 400);
-        startActivity(discoveryIntent);
+
+
+//        //make device discoverable for 400 milli sec.
+//        Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+//        //Specify how long the device will be discoverable for, in seconds.//
+//        discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 400);
+//        startActivity(discoveryIntent);
 
         // Social button to go to list
         Button appsButtonList = findViewById(R.id.appsButton);
@@ -111,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(installedAppsActivityIntent);
             }
         });
-
 
         // switch other social apps 
         switchOtherAppsSocial = findViewById(R.id.switchOtherAppsSocial);
@@ -200,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
             mMessageReceiverToggleButton, new IntentFilter("intentToggleButton"));
+
     }
 
     private final BroadcastReceiver mMessageReceiverToggleButton = new BroadcastReceiver() {
@@ -222,54 +228,13 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(runnable = new Runnable() {
             @Override
             public void run() {
-                handler.postDelayed(runnable, 10000);
+                handler.postDelayed(runnable, 30000);
+                connect();
+                Log.d("MyAct", btSocket.getRemoteDevice().toString());
 
-               //if(!btSocket.isConnected()){
-                    //get list of paired devices
-                    Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+            }
 
-                    // If there’s 1 or more paired devices...//
-                    if (pairedDevices.size() >= 0) {
-
-                        //...then loop through these devices and show in log for debugging purposes
-                        for (BluetoothDevice device : pairedDevices) {
-                            //Retrieve each device’s public identifier and MAC address. Add each device’s name and address to an ArrayAdapter, ready to incorporate into a
-                            //ListView
-                            String list_of_devices = device.getName() + "\n" + device.getAddress();
-                            //Log.d("MyActivity", list_of_devices);
-
-                            //try to connect to desk token
-                            if(device.getName().equals("DESK TOKEN")){
-                                try {
-                                    btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
-                                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-
-                                    //Now you will start the connection
-                                    btSocket.connect();
-                                    Log.d("MyActivity", "Connected Desk!");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                            //try to connect to Social token
-                            else if(device.getName().equals("SOCIAL TOKEN")) {
-                                try {
-                                    btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
-                                    BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
-
-                                    //Now you will start the connection
-                                    btSocket.connect();
-                                    Log.d("MyActivity", "Connected Social!");
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-               }
-                //}
-            //}
-        }, 5000);
+        }, 30000);
 
         super.onResume();
     }
@@ -290,24 +255,89 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTokenImageChanger() {
         ImageView TokenImage = findViewById(R.id.ImageViewToken);
+        if(!settings.getBoolean("switchOtherAppsDesk",true) && !settings.getBoolean("switchOtherAppsSocial",true)){
+            TokenImage.setBackground(getResources().getDrawable(R.drawable.no_token));
+        }
         if(settings.getBoolean("switchOtherAppsDesk", true) && !settings.getBoolean("switchOtherAppsSocial", true)){
-            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_blue));
+            TokenImage.setBackground(getResources().getDrawable(R.drawable.desk_token));
         }
         if(!settings.getBoolean("switchOtherAppsDesk", true) && settings.getBoolean("switchOtherAppsSocial", true)){
-            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_orange));
+            TokenImage.setBackground(getResources().getDrawable(R.drawable.social_token));
         }
-        if(settings.getBoolean("switchOtherAppsDesk",true) && settings.getBoolean("switchOtherAppsSocial",true)){
-            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_both));
-        }
-        if(!settings.getBoolean("switchOtherAppsDesk",true) && !settings.getBoolean("switchOtherAppsSocial",true)){
-            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_gray));
-        }
+//        if(settings.getBoolean("switchOtherAppsDesk",true) && settings.getBoolean("switchOtherAppsSocial",true)){
+//            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_both));
+//        }
     }
 
     //start or stop the overlay for the app that is open(ed)
     private static void startOverlayService() {
         Intent intent = new Intent(appContext, Overlay.class);
         appContext.startService(intent);
+    }
+
+    public void connect(){
+
+        //get list of paired devices
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+
+        // If there’s 1 or more paired devices...//
+        if (pairedDevices.size() >= 0) {
+
+            // checks if is allowed to overlay on top of other apps, if not then send user to settings.
+            if(!Settings.canDrawOverlays(MainActivity.this)) {
+                Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
+                startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
+            }
+            startOverlayService();
+
+            //...then loop through these devices and show in log for debugging purposes
+            for (BluetoothDevice device : pairedDevices) {
+                //Retrieve each device’s public identifier and MAC address. Add each device’s name and address to an ArrayAdapter, ready to incorporate into a
+                //ListView
+                String list_of_devices = device.getName() + "\n" + device.getAddress();
+                //Log.d("MyActivity", list_of_devices);
+
+                //try to connect to desk token
+                if(device.getName().equals("DESK TOKEN")){
+                    try {
+                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
+                        //Now you will start the connection
+                        btSocket.connect();
+                        Log.d("MyActivity", "Connected Desk!");
+                        editor.putBoolean("switchOtherAppsDesk", true);
+                        editor.putBoolean("switchOtherAppsSocial", false);
+                        editor.commit();
+                        startTokenImageChanger();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //try to connect to Social token
+                else if(device.getName().equals("SOCIAL TOKEN")) {
+                    try {
+                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                        BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
+
+                        //Now you will start the connection
+                        btSocket.connect();
+                        Log.d("MyActivity", "Connected Social!");
+                        editor.putBoolean("switchOtherAppsDesk", false);
+                        editor.putBoolean("switchOtherAppsSocial", true);
+                        editor.commit();
+                        startTokenImageChanger();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    editor.putBoolean("switchOtherAppsDesk", false);
+                    editor.putBoolean("switchOtherAppsSocial", false);
+                    editor.commit();
+                }
+            }
+        }
+
     }
 
     @Override

@@ -114,7 +114,7 @@ public class Overlay extends Service {
     }
 
     private void displayToast(final String msg) {
-        Handler handler = new Handler(Looper.getMainLooper());
+        //Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
 
             @Override
