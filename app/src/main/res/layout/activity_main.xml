@@ -65,6 +65,7 @@
 
     <ImageView
         android:id="@+id/BTEnabled"
+
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:scaleType="fitXY"
