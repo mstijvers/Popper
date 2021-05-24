@@ -302,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
             TokenImage.setBackground(getResources().getDrawable(R.drawable.desk_token));
             if (strIncom != null){
                 if(strIncom.toString().equals("0")) {
-                    TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_gray));
+                    TokenImage.setBackground(getResources().getDrawable(R.drawable.desk_token_inactive));
                 }
             }
         }
@@ -310,7 +310,7 @@ public class MainActivity extends AppCompatActivity {
             TokenImage.setBackground(getResources().getDrawable(R.drawable.social_token));
             if (strIncom != null){
                 if(strIncom.toString().equals("0")) {
-                    TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_gray));
+                    TokenImage.setBackground(getResources().getDrawable(R.drawable.chill_token_inactive));
                 }
             }
         }
