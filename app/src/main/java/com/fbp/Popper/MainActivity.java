@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.RotateDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -67,9 +68,9 @@ public class MainActivity extends AppCompatActivity {
     public static final String Button_list_Activity = null;
     public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public BluetoothSocket mmSocket = null;
-    public String bluetooth_message="00";
+    public String bluetooth_message = "00";
     Handler h;
-    TextView txtArduino;
+    public String strIncom;
     private StringBuilder sb = new StringBuilder();
 
 
@@ -114,19 +115,29 @@ public class MainActivity extends AppCompatActivity {
                 switch (msg.what) {
                     case MESSAGE_READ:                                                   // if receive massage
                         byte[] readBuf = (byte[]) msg.obj;
-                        String strIncom = new String(readBuf, 0, msg.arg1);                 // create string from bytes array
-                        sb.append(strIncom);                                                // append string
-                        int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end-of-line
-                        if (endOfLineIndex > 0) {                                           // if end-of-line,
-                            String sbprint = sb.substring(0, endOfLineIndex);               // extract string
-                            sb.delete(0, sb.length());                                       // and clear
-                            Log.d("MyAct ", strIncom);
-                            // txtArduino.setText(sbprint);                                    // update TextView
+                        strIncom = new String(readBuf, 0, msg.arg1);                 // create string from bytes array
+//                        sb.append(strIncom);                                                // append string
+//                        int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end-of-line
+//                        if (endOfLineIndex > 0) {                                           // if end-of-line,
+//                            String sbprint = sb.substring(0, endOfLineIndex);               // extract string
+//                            sb.delete(0, sb.length());                                       // and clear
+//                           //Log.d("MyAct ", "sbprint : " + sbprint);
+//                            // txtArduino.setText(sbprint);                                    // update TextView
+//                        }
+                        Log.d("MyAct ", "the string number : " + strIncom.toString());
+//                        Log.d("MyAct", "...String: "+ sb.toString() );
+                        if (strIncom.toString().equals("0")) {
+                            startTokenImageChanger();
+
                         }
-                        //Log.d(TAG, "...String:"+ sb.toString() +  "Byte:" + msg.arg1 + "...");
+                        if (strIncom.toString().equals("1")) {
+                            startTokenImageChanger();
+                        }
                         break;
                 }
-            };
+            }
+
+            ;
         };
 
 //        //make device discoverable for 400 milli sec.
@@ -289,9 +300,19 @@ public class MainActivity extends AppCompatActivity {
         }
         if (settings.getBoolean("switchOtherAppsDesk", true) && !settings.getBoolean("switchOtherAppsSocial", true)) {
             TokenImage.setBackground(getResources().getDrawable(R.drawable.desk_token));
+            if (strIncom != null){
+                if(strIncom.toString().equals("0")) {
+                    TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_gray));
+                }
+            }
         }
         if (!settings.getBoolean("switchOtherAppsDesk", true) && settings.getBoolean("switchOtherAppsSocial", true)) {
             TokenImage.setBackground(getResources().getDrawable(R.drawable.social_token));
+            if (strIncom != null){
+                if(strIncom.toString().equals("0")) {
+                    TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_gray));
+                }
+            }
         }
 //        if(settings.getBoolean("switchOtherAppsDesk",true) && settings.getBoolean("switchOtherAppsSocial",true)){
 //            TokenImage.setBackground(getResources().getDrawable(R.drawable.popper_both));
@@ -363,6 +384,8 @@ public class MainActivity extends AppCompatActivity {
                         editor.putBoolean("switchOtherAppsSocial", true);
                         editor.commit();
                         startTokenImageChanger();
+                        ConnectedThread connectThread = new ConnectedThread(mmSocket);
+                        connectThread.start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -405,28 +428,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @SuppressLint("HandlerLeak")
-    Handler mHandler=new Handler()
-    {
-
-        @Override
-        public void handleMessage(Message msg_type) {
-            super.handleMessage(msg_type);
-            Log.d("MyAct", "string_recieved mHandler" );
-
-            switch (msg_type.what){
-                case MESSAGE_READ:
-
-                    byte[] readbuf=(byte[])msg_type.obj;
-                    String string_recieved=new String(readbuf);
-                    Log.d("MyAct", string_recieved );
-                    //do some task based on recieved string
-
-                    break;
-            }
-        }
-    };
-
     public class ConnectedThread extends Thread {
 
         private final BluetoothSocket mmSocket;
@@ -442,8 +443,9 @@ public class MainActivity extends AppCompatActivity {
             // member streams are final
             try {
                 tmpIn = socket.getInputStream();
-                Log.d("MyAct", tmpIn.toString());
-            } catch (IOException e) { }
+                //Log.d("MyAct", tmpIn.toString());
+            } catch (IOException e) {
+            }
 
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
@@ -460,7 +462,7 @@ public class MainActivity extends AppCompatActivity {
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI activity
 
-                    Log.d("MyACt", "bytes send");
+                    //Log.d("MyACt", "bytes send");
                     h.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
 
                 } catch (IOException e) {
@@ -473,14 +475,16 @@ public class MainActivity extends AppCompatActivity {
         public void write(byte[] bytes) {
             try {
                 mmOutStream.write(bytes);
-            } catch (IOException e) { }
+            } catch (IOException e) {
+            }
         }
 
         /* Call this from the main activity to shutdown the connection */
         public void cancel() {
             try {
                 mmSocket.close();
-            } catch (IOException e) { }
+            } catch (IOException e) {
+            }
         }
     }
 }
