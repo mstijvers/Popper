@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
@@ -17,7 +16,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
@@ -64,8 +62,6 @@ public class MainActivity extends AppCompatActivity {
     public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public BluetoothSocket btSocket = null;
 
-    public BluetoothDevice mDevice;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,8 +97,15 @@ public class MainActivity extends AppCompatActivity {
         if(mBluetoothAdapter.isEnabled()) {
 
             BleImage.setBackgroundResource(R.drawable.ic_blue_on);
-
         }
+
+
+
+//        //make device discoverable for 400 milli sec.
+//        Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+//        //Specify how long the device will be discoverable for, in seconds.//
+//        discoveryIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 400);
+//        startActivity(discoveryIntent);
 
         // Social button to go to list
         Button appsButtonList = findViewById(R.id.appsButton);
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // switch other social apps
+        // switch other social apps 
         switchOtherAppsSocial = findViewById(R.id.switchOtherAppsSocial);
         switchOtherAppsSocial.setChecked(settings.getBoolean("switchOtherAppsSocial", false));
         switchOtherAppsSocial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -358,6 +361,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-
 }
 
