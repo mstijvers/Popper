@@ -1,5 +1,6 @@
 package com.fbp.Popper;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AppOpsManager;
 import android.app.NotificationManager;
@@ -19,6 +20,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,6 +29,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -34,6 +37,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
+
+import static com.fbp.Popper.Constants.MESSAGE_READ;
+import static com.fbp.Popper.Constants.MESSAGE_WRITE;
+import static com.google.android.gms.cast.framework.CastState.CONNECTED;
+import static com.google.android.gms.cast.framework.CastState.CONNECTING;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,6 +67,10 @@ public class MainActivity extends AppCompatActivity {
     public static final String Button_list_Activity = null;
     public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     public BluetoothSocket mmSocket = null;
+    public String bluetooth_message="00";
+    Handler h;
+    TextView txtArduino;
+    private StringBuilder sb = new StringBuilder();
 
 
     @Override
@@ -97,6 +109,25 @@ public class MainActivity extends AppCompatActivity {
             BleImage.setBackgroundResource(R.drawable.ic_blue_on);
         }
 
+        h = new Handler() {
+            public void handleMessage(android.os.Message msg) {
+                switch (msg.what) {
+                    case MESSAGE_READ:                                                   // if receive massage
+                        byte[] readBuf = (byte[]) msg.obj;
+                        String strIncom = new String(readBuf, 0, msg.arg1);                 // create string from bytes array
+                        sb.append(strIncom);                                                // append string
+                        int endOfLineIndex = sb.indexOf("\r\n");                            // determine the end-of-line
+                        if (endOfLineIndex > 0) {                                           // if end-of-line,
+                            String sbprint = sb.substring(0, endOfLineIndex);               // extract string
+                            sb.delete(0, sb.length());                                       // and clear
+                            Log.d("MyAct ", strIncom);
+                            // txtArduino.setText(sbprint);                                    // update TextView
+                        }
+                        //Log.d(TAG, "...String:"+ sb.toString() +  "Byte:" + msg.arg1 + "...");
+                        break;
+                }
+            };
+        };
 
 //        //make device discoverable for 400 milli sec.
 //        Intent discoveryIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -313,6 +344,8 @@ public class MainActivity extends AppCompatActivity {
                         editor.putBoolean("switchOtherAppsSocial", false);
                         editor.commit();
                         startTokenImageChanger();
+                        ConnectedThread connectThread = new ConnectedThread(mmSocket);
+                        connectThread.start();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -369,6 +402,85 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
             }
+        }
+    }
+
+    @SuppressLint("HandlerLeak")
+    Handler mHandler=new Handler()
+    {
+
+        @Override
+        public void handleMessage(Message msg_type) {
+            super.handleMessage(msg_type);
+            Log.d("MyAct", "string_recieved mHandler" );
+
+            switch (msg_type.what){
+                case MESSAGE_READ:
+
+                    byte[] readbuf=(byte[])msg_type.obj;
+                    String string_recieved=new String(readbuf);
+                    Log.d("MyAct", string_recieved );
+                    //do some task based on recieved string
+
+                    break;
+            }
+        }
+    };
+
+    public class ConnectedThread extends Thread {
+
+        private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        public ConnectedThread(BluetoothSocket socket) {
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            // Get the input and output streams, using temp objects because
+            // member streams are final
+            try {
+                tmpIn = socket.getInputStream();
+                Log.d("MyAct", tmpIn.toString());
+            } catch (IOException e) { }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        public void run() {
+            byte[] buffer = new byte[2];  // buffer store for the stream
+            int bytes; // bytes returned from read()
+
+            // Keep listening to the InputStream until an exception occurs
+            while (true) {
+                try {
+                    // Read from the InputStream
+                    bytes = mmInStream.read(buffer);
+                    // Send the obtained bytes to the UI activity
+
+                    Log.d("MyACt", "bytes send");
+                    h.obtainMessage(MESSAGE_READ, bytes, -1, buffer).sendToTarget();
+
+                } catch (IOException e) {
+                    break;
+                }
+            }
+        }
+
+        /* Call this from the main activity to send data to the remote device */
+        public void write(byte[] bytes) {
+            try {
+                mmOutStream.write(bytes);
+            } catch (IOException e) { }
+        }
+
+        /* Call this from the main activity to shutdown the connection */
+        public void cancel() {
+            try {
+                mmSocket.close();
+            } catch (IOException e) { }
         }
     }
 }

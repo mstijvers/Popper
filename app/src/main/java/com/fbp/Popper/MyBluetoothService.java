@@ -11,7 +11,7 @@ import java.io.OutputStream;
 
 public class MyBluetoothService {
     private static final String TAG = "MY_APP_DEBUG_TAG";
-    private Handler handler; // handler that gets info from Bluetooth service
+    private Handler mHandler; // handler that gets info from Bluetooth service
 
     // Defines several constants used when transmitting messages between the
     // service and the UI.
@@ -62,7 +62,7 @@ public class MyBluetoothService {
                     // Read from the InputStream.
                     numBytes = mmInStream.read(mmBuffer);
                     // Send the obtained bytes to the UI activity.
-                    Message readMsg = handler.obtainMessage(
+                    Message readMsg = mHandler.obtainMessage(
                             MessageConstants.MESSAGE_READ, numBytes, -1,
                             mmBuffer);
                     readMsg.sendToTarget();
@@ -79,7 +79,7 @@ public class MyBluetoothService {
                 mmOutStream.write(bytes);
 
                 // Share the sent message with the UI activity.
-                Message writtenMsg = handler.obtainMessage(
+                Message writtenMsg = mHandler.obtainMessage(
                         MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
                 writtenMsg.sendToTarget();
             } catch (IOException e) {
@@ -87,12 +87,12 @@ public class MyBluetoothService {
 
                 // Send a failure message back to the activity.
                 Message writeErrorMsg =
-                        handler.obtainMessage(MessageConstants.MESSAGE_TOAST);
+                        mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
                 Bundle bundle = new Bundle();
                 bundle.putString("toast",
                         "Couldn't send data to the other device");
                 writeErrorMsg.setData(bundle);
-                handler.sendMessage(writeErrorMsg);
+                mHandler.sendMessage(writeErrorMsg);
             }
         }
 
@@ -105,4 +105,6 @@ public class MyBluetoothService {
             }
         }
     }
+
+
 }
