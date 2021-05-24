@@ -16,21 +16,19 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -60,13 +58,13 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String Button_list_Activity = null;
     public BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    public BluetoothSocket btSocket = null;
+    public BluetoothSocket mmSocket = null;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRequestedOrientation (ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
 
         settings = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
@@ -83,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         ImageView BleImage = findViewById(R.id.BTEnabled);
         if (mBluetoothAdapter == null) {
             //Display a toast notifying the user that their device doesn’t support Bluetooth//
-            Toast.makeText(getApplicationContext(),"This device doesn’t support Bluetooth",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "This device doesn’t support Bluetooth", Toast.LENGTH_SHORT).show();
         }
         if (!mBluetoothAdapter.isEnabled()) {
             //Create an intent with the ACTION_REQUEST_ENABLE action, which we’ll use to display our system Activity//
@@ -94,11 +92,10 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Enabling Bluetooth!", Toast.LENGTH_LONG).show();
             BleImage.setBackgroundResource(R.drawable.ic_blue_off);
         }
-        if(mBluetoothAdapter.isEnabled()) {
+        if (mBluetoothAdapter.isEnabled()) {
 
             BleImage.setBackgroundResource(R.drawable.ic_blue_on);
         }
-
 
 
 //        //make device discoverable for 400 milli sec.
@@ -113,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
         appsButtonList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                installedAppsActivityIntent.putExtra(Button_list_Activity,"Button");
+                installedAppsActivityIntent.putExtra(Button_list_Activity, "Button");
                 startActivity(installedAppsActivityIntent);
             }
         });
@@ -124,38 +121,38 @@ public class MainActivity extends AppCompatActivity {
         switchOtherAppsSocial.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked) {
-                editor.putBoolean("switchOtherAppsSocial", true);
-                //checks if is view app running in Foreground.
-                //checks whether premission is granted to block other applications while driving
-                try {
-                    ApplicationInfo applicationInfo = MainActivity.this.getPackageManager().getApplicationInfo(MainActivity.this.getPackageName(), 0);
-                    assert ( MainActivity.this.getSystemService(Context.APP_OPS_SERVICE)) != null;
-                    if(((AppOpsManager) MainActivity.this.getSystemService(Context.APP_OPS_SERVICE))
-                            .checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
-                            != AppOpsManager.MODE_ALLOWED) {
-                        // checks if is allowed to overlay on top of other apps, if not then send user to settings.
+                if (isChecked) {
+                    editor.putBoolean("switchOtherAppsSocial", true);
+                    //checks if is view app running in Foreground.
+                    //checks whether premission is granted to block other applications while driving
+                    try {
+                        ApplicationInfo applicationInfo = MainActivity.this.getPackageManager().getApplicationInfo(MainActivity.this.getPackageName(), 0);
+                        assert (MainActivity.this.getSystemService(Context.APP_OPS_SERVICE)) != null;
+                        if (((AppOpsManager) MainActivity.this.getSystemService(Context.APP_OPS_SERVICE))
+                                .checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
+                                != AppOpsManager.MODE_ALLOWED) {
+                            // checks if is allowed to overlay on top of other apps, if not then send user to settings.
+                            Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
+
+                            startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS), REQUEST_CODE_USAGE);
+
+                            switchOtherAppsSocial.setChecked(false);
+                        }
+                    } catch (PackageManager.NameNotFoundException e) {
+                        e.printStackTrace();
+                    }
+
+                    // checks if is allowed to overlay on top of other apps, if not then send user to settings.
+                    if (!Settings.canDrawOverlays(MainActivity.this)) {
                         Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
-
-                        startActivityForResult(new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS), REQUEST_CODE_USAGE);
-
+                        startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
                         switchOtherAppsSocial.setChecked(false);
                     }
-                } catch (PackageManager.NameNotFoundException e) {
-                    e.printStackTrace();
+                    startOverlayService();
+                } else {
+                    editor.putBoolean("switchOtherAppsSocial", false);
                 }
-
-                // checks if is allowed to overlay on top of other apps, if not then send user to settings.
-                if(!Settings.canDrawOverlays(MainActivity.this)) {
-                    Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
-                    startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
-                    switchOtherAppsSocial.setChecked(false);
-                }
-                startOverlayService();
-            } else {
-                editor.putBoolean("switchOtherAppsSocial", false);
-            }
-            editor.commit();
+                editor.commit();
                 startTokenImageChanger();
             }
 
@@ -173,8 +170,8 @@ public class MainActivity extends AppCompatActivity {
                     //checks if is view app running in Foreground.
                     try {
                         ApplicationInfo applicationInfo = MainActivity.this.getPackageManager().getApplicationInfo(MainActivity.this.getPackageName(), 0);
-                        assert ( MainActivity.this.getSystemService(Context.APP_OPS_SERVICE)) != null;
-                        if(((AppOpsManager) MainActivity.this.getSystemService(Context.APP_OPS_SERVICE))
+                        assert (MainActivity.this.getSystemService(Context.APP_OPS_SERVICE)) != null;
+                        if (((AppOpsManager) MainActivity.this.getSystemService(Context.APP_OPS_SERVICE))
                                 .checkOpNoThrow(AppOpsManager.OPSTR_GET_USAGE_STATS, applicationInfo.uid, applicationInfo.packageName)
                                 != AppOpsManager.MODE_ALLOWED) {
                             Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
@@ -188,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     // checks if is allowed to overlay on top of other apps, if not then send user to settings.
-                    if(!Settings.canDrawOverlays(MainActivity.this)) {
+                    if (!Settings.canDrawOverlays(MainActivity.this)) {
                         Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
                         startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
 
@@ -204,15 +201,15 @@ public class MainActivity extends AppCompatActivity {
         });
 
         LocalBroadcastManager.getInstance(this).registerReceiver(
-            mMessageReceiverToggleButton, new IntentFilter("intentToggleButton"));
+                mMessageReceiverToggleButton, new IntentFilter("intentToggleButton"));
 
     }
 
     private final BroadcastReceiver mMessageReceiverToggleButton = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-        // Get extra data included in the Intent
-        boolean value = intent.getBooleanExtra("valueBool", false);
+            // Get extra data included in the Intent
+            boolean value = intent.getBooleanExtra("valueBool", false);
         }
     };
 
@@ -225,17 +222,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
 
         final Handler handler = new Handler();
-        handler.postDelayed(runnable = new Runnable() {
-            @Override
-            public void run() {
-                handler.postDelayed(runnable, 30000);
-                connect();
-                Log.d("MyAct", btSocket.getRemoteDevice().toString());
+        handler.postDelayed(runnable = new
 
-            }
+                Runnable() {
+                    @Override
+                    public void run() {
+                        handler.postDelayed(runnable, 30000);
+                        connect();
+                        //Log.d("MyAct", btSocket.getRemoteDevice().toString());
 
-        }, 30000);
+                    }
 
+                }, 30000);
         super.onResume();
     }
 
@@ -255,13 +253,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void startTokenImageChanger() {
         ImageView TokenImage = findViewById(R.id.ImageViewToken);
-        if(!settings.getBoolean("switchOtherAppsDesk",true) && !settings.getBoolean("switchOtherAppsSocial",true)){
+        if (!settings.getBoolean("switchOtherAppsDesk", true) && !settings.getBoolean("switchOtherAppsSocial", true)) {
             TokenImage.setBackground(getResources().getDrawable(R.drawable.no_token));
         }
-        if(settings.getBoolean("switchOtherAppsDesk", true) && !settings.getBoolean("switchOtherAppsSocial", true)){
+        if (settings.getBoolean("switchOtherAppsDesk", true) && !settings.getBoolean("switchOtherAppsSocial", true)) {
             TokenImage.setBackground(getResources().getDrawable(R.drawable.desk_token));
         }
-        if(!settings.getBoolean("switchOtherAppsDesk", true) && settings.getBoolean("switchOtherAppsSocial", true)){
+        if (!settings.getBoolean("switchOtherAppsDesk", true) && settings.getBoolean("switchOtherAppsSocial", true)) {
             TokenImage.setBackground(getResources().getDrawable(R.drawable.social_token));
         }
 //        if(settings.getBoolean("switchOtherAppsDesk",true) && settings.getBoolean("switchOtherAppsSocial",true)){
@@ -275,7 +273,7 @@ public class MainActivity extends AppCompatActivity {
         appContext.startService(intent);
     }
 
-    public void connect(){
+    public void connect() {
 
         //get list of paired devices
         Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
@@ -284,8 +282,13 @@ public class MainActivity extends AppCompatActivity {
         if (pairedDevices.size() >= 0) {
 
             // checks if is allowed to overlay on top of other apps, if not then send user to settings.
-            if(!Settings.canDrawOverlays(MainActivity.this)) {
-                Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
+            if (!Settings.canDrawOverlays(MainActivity.this)) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(MainActivity.this, "Please grant permission in order to block other applications while driving", Toast.LENGTH_LONG).show();
+
+                    }
+                });
                 startActivityForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION), REQUEST_CODE_OVERLAY);
             }
             startOverlayService();
@@ -298,13 +301,13 @@ public class MainActivity extends AppCompatActivity {
                 //Log.d("MyActivity", list_of_devices);
 
                 //try to connect to desk token
-                if(device.getName().equals("DESK TOKEN")){
+                if (device.getName().equals("DESK TOKEN")) {
                     try {
-                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                        mmSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
                         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
 
                         //Now you will start the connection
-                        btSocket.connect();
+                        mmSocket.connect();
                         Log.d("MyActivity", "Connected Desk!");
                         editor.putBoolean("switchOtherAppsDesk", true);
                         editor.putBoolean("switchOtherAppsSocial", false);
@@ -315,13 +318,13 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 //try to connect to Social token
-                else if(device.getName().equals("SOCIAL TOKEN")) {
+                else if (device.getName().equals("SOCIAL TOKEN")) {
                     try {
-                        btSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
+                        mmSocket = device.createInsecureRfcommSocketToServiceRecord(myUUID);
                         BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
 
                         //Now you will start the connection
-                        btSocket.connect();
+                        mmSocket.connect();
                         Log.d("MyActivity", "Connected Social!");
                         editor.putBoolean("switchOtherAppsDesk", false);
                         editor.putBoolean("switchOtherAppsSocial", true);
@@ -350,14 +353,21 @@ public class MainActivity extends AppCompatActivity {
             if (resultCode == Activity.RESULT_OK) {
 
                 //...then display the following toast.//
-                Toast.makeText(getApplicationContext(), "Bluetooth has been enabled", Toast.LENGTH_SHORT).show();
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Bluetooth has been enabled", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
 
             //If the request was unsuccessful...//
-            if(resultCode == RESULT_CANCELED){
-
-                //...then display this alternative toast.//
-                Toast.makeText(getApplicationContext(), "An error occurred while attempting to enable Bluetooth", Toast.LENGTH_SHORT).show();
+            if (resultCode == RESULT_CANCELED) {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        //...then display this alternative toast.//
+                        Toast.makeText(getApplicationContext(), "An error occurred while attempting to enable Bluetooth", Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         }
     }
