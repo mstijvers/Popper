@@ -32,9 +32,9 @@ What's all the bells and whistles this project can perform?
 * Blocking Other Applications
 * Setting applications to block for different spaces.
 
-![Home screen] (https://github.com/mstijvers/Popper/blob/master/imagesReadMe/home%20screen.PNG?raw=true)
+![Home screen](https://github.com/mstijvers/Popper/blob/master/imagesReadMe/home%20screen.PNG?raw=true)
 
-![Premissions screen] (https://github.com/mstijvers/Popper/blob/master/imagesReadMe/premissions.PNG?raw=true)
+![Premissions screen](https://github.com/mstijvers/Popper/blob/master/imagesReadMe/premissions.PNG?raw=true)
 
 ## Licensing
 This code is inspired on the repository of robmcelhinney/phone-block
