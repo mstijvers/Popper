@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.robmcelhinney.PhoneBlock">
+    package="com.fbp.Popper">
 
-    <uses-feature
-        android:name="android.hardware.sensor.accelerometer"
-        android:required="true" />
+
+    <uses-feature android:name="android.software.companion_device_setup"/>
 
     <supports-screens
         android:normalScreens="true"
@@ -19,6 +18,11 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name ="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name=".BluetoothDataService"/>
+    <uses-permission android:name ="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name ="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name ="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission
@@ -29,34 +33,24 @@
         android:allowBackup="true"
         android:extractNativeLibs="false"
         android:fullBackupContent="@xml/backup_descriptor"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:icon="@drawable/ic_launcher"
+        android:roundIcon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.robmcelhinney.PhoneBlock.MainActivity" android:screenOrientation="portrait">
+        <activity android:name="com.fbp.Popper.MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <service android:name="com.robmcelhinney.PhoneBlock.ActivityRecognisedService"
-            android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.ChangeDNDService"
-            android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.DetectDrivingService"
-            android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.DisturbService"
-            android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.Overlay"
-            android:exported="false" />
-        <service android:name="com.robmcelhinney.PhoneBlock.UtilitiesService"
+        <service android:name="com.fbp.Popper.Overlay"
             android:exported="false" />
 
-        <activity android:name="com.robmcelhinney.PhoneBlock.PermissionsSplashActivity" android:screenOrientation="portrait">
+        <activity android:name="com.fbp.Popper.PermissionsSplashActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name="com.robmcelhinney.PhoneBlock.InstalledAppsActivity" android:screenOrientation="portrait">
+        <activity android:name="com.fbp.Popper.InstalledAppsActivity" android:screenOrientation="portrait">
         </activity>
     </application>
 </manifest>

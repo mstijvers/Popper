@@ -1,25 +1,19 @@
 <resources>
-    <string name="app_name">Phone Block</string>
+    <string name="app_name">Popper</string>
     <string name="contentDescKey">Image of key to denote permissions are needed.</string>
     <string name="SplashHeader">Permissions are Needed</string>
     <string name="skipUnderline"><u>skip</u></string>
     <string name="title_activity_list_apps_scrolling">ListAppsScrollingActivity</string>
     <string name="action_settings">Settings</string>
-    <string name="phoneblock_activated">Phone Block Activated.</string>
-    <string name="not_driving">Not driving</string>
-    <string name="driving">Driving</string>
-    <string name="togglebutton">ToggleButton</string>
-    <string name="turn_on_detection">Turn On Detection</string>
-    <string name="bluetooth_detection">Bluetooth Detection</string>
     <string name="block_apps_social">Block Apps Social</string>
     <string name="block_apps_desk">Block Apps Desk</string>
-    <string name="choose_apps_social">Choose Apps Social</string>
-    <string name="choose_apps_desk">Choose Apps Desk</string>
+    <string name="choose_apps">APPS</string>
+    <string name="checkboxes">SOCIAL DESK</string>
     <string name="go">Go</string>
     <string name="without_these_permissions_we_will_be_unable_to_activate_the_block_while_driving">Without these permissions, we will be unable to activate the block while driving.</string>
     <string name="please_enable_notification_access_on_the_next_screen_to_use_this_app">Please enable notification access on the next screen to use this app.</string>
     <string name="icon_of_application">Icon of Application</string>
     <string name="textview">TextView</string>
-    <string name="blocked_app_warning">App not allowed while driving</string>
-    <string name="close_app_driving">Close app while driving</string>
+    <string name="blocked_app_warning">Try to keep your balance.</string>
+    <string name="close_app_driving">Still, try to keep your balance.</string>
 </resources>
