@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/grey"
-    tools:context="com.robmcelhinney.PhoneBlock.InstalledAppsActivity">
+    tools:context="com.fbp.Popper.InstalledAppsActivity"
+    android:orientation="vertical">
     <include layout="@layout/progess_loading_overlay"/>
-    <ListView
-        android:id="@+id/listViewID"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingBottom="8dp"
-        android:paddingTop="8dp"
-        android:divider="@color/transparentBlack10"
-        android:dividerHeight="0.1dp"
-        android:theme="@style/MyList">
-    </ListView>
-</RelativeLayout>
+
+ <TextView
+     android:layout_width="match_parent"
+     android:layout_height="80dp"
+     android:id="@+id/Checkboxes"
+     android:text="@string/checkboxes"
+     android:textAlignment="textEnd"
+     android:textSize="20dp"
+     android:paddingRight="16dp"
+     android:gravity="center_vertical"
+     tools:ignore="RtlCompat">
+ </TextView>
+     <ListView
+         android:id="@+id/listViewID"
+         android:layout_width="match_parent"
+         android:layout_height="650dp"
+         android:paddingBottom="8dp"
+         android:paddingTop="8dp"
+         android:divider="@color/transparentBlack10"
+         android:dividerHeight="4dp"
+         android:theme="@style/MyList">
+     </ListView>
+
+</LinearLayout>

@@ -8,64 +8,67 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:background="@color/grey"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.robmcelhinney.PhoneBlock.MainActivity">
+    tools:context="com.fbp.Popper.MainActivity">
 
 
-    <ToggleButton
-    android:id="@+id/toggleButtonActive"
-    style="@style/Base.Widget.AppCompat.Button"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentTop="true"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="37dp"
-    android:clipToPadding="false"
-    android:text="@string/togglebutton"
-    android:textOff="@string/not_driving"
-    android:textOn="@string/driving"
-    android:theme="@style/MyButton" />
+
 
     <Switch
-    android:id="@+id/switchDetection"
-    android:layout_width="200dp"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/toggleButtonActive"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="61dp"
-    android:text="@string/turn_on_detection"
-    android:textAlignment="viewStart"
-    android:textColor="@color/black" />
+        android:id="@+id/switchOtherAppsSocial"
+        android:layout_width="125dp"
+        android:layout_height="54dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/block_apps_social"
+        android:textColor="@color/black" />
 
     <Switch
-    android:id="@+id/switchBT"
-    android:layout_width="200dp"
+        android:id="@+id/switchOtherAppsDesk"
+        android:layout_width="170dp"
+        android:layout_height="57dp"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="61dp"
+        android:layout_toStartOf="@+id/switchOtherAppsSocial"
+        android:text="@string/block_apps_desk"
+        android:textColor="@color/black" />
+
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/ImageViewToken"
+        android:adjustViewBounds="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleType="fitXY"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/switchOtherAppsSocial"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/no_token"/>
+
+<GridLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_below="@+id/switchDetection"
+    android:layout_below="@+id/ImageViewToken"
+    android:layout_marginTop="40dp"
     android:layout_centerHorizontal="true"
-    android:layout_marginTop="23dp"
-    android:text="@string/bluetooth_detection"
-    android:textColor="@color/black" />
-
-    <Switch
-    android:id="@+id/switchOtherApps"
-    android:layout_width="200dp"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/switchBT"
-    android:layout_alignStart="@+id/switchBT"
-    android:layout_marginTop="23dp"
-    android:layout_centerHorizontal="true"
-    android:text="@string/block_apps"
-    android:textColor="@color/black" />
-
-
+    android:scaleType="fitXY"
+    >
     <Button
-    android:id="@+id/appsButton"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/switchOtherApps"
-    android:layout_centerHorizontal="true"
-    android:layout_marginTop="60dp"
-    android:text="@string/choose_apps"
-    android:theme="@style/ListAppsButton" />
+        android:id="@+id/appsButton"
+        android:layout_width="260dp"
+        android:layout_height="60dp"
+        android:text="@string/choose_apps"
+        android:layout_marginStart="20dp"
+        android:theme="@style/ListAppsButton" />
 
+    <ImageView
+        android:id="@+id/BTEnabled"
+
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="fitXY"
+        />
+</GridLayout>
 </RelativeLayout>
