@@ -1,17 +1,10 @@
-![Logo of the project](https://github.com/robmcelhinney/PhoneBlock/raw/master/app/src/main/res/drawable/ic_stat_notify_driving.png)
-# PhoneBlock
-> Android Application aiming to prevent phone use while driving.
+﻿![Logo of the project](https://github.com/mstijvers/phone-block/blob/master/app/src/main/res/drawable/ic_launcher.png?raw=true)
+# Popper Final Bachelor Project
+> Android Application aiming to organzine and control social media behaviour.
 
-Native Android Application designed to detect when a user is driving and then
-prevent the user from using other applications. Hoped to use way drivers enter
-car as way to differentiate them from passengers, by the movement of the phone
-in the user’s pants pocket. Created training dataset of sitting into car 
-activity by recording the using accelerometer data and trained a Long Short Term
-Neural Network for Human Activity Recognition in Tensorflow. The model
-created from this training is exported to the Android application. Detects user’s activity,
-and records the device’s accelerometer data to compare against the model, predicting a match with
-entering a car. If the device is detected to be in a vehicle, through the activity recognition 
-API, block activates.
+An Android application designed to work with physical tokens. 
+The tokens connect to the application by use of bluetooth where the application allows for 
+access to specific applications based on this bluetooth connection. 
 
 ## Installing / Getting started
 
